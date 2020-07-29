@@ -1,3 +1,5 @@
+[![Documentation Status](https://readthedocs.org/projects/pyphpbb-sl/badge/?version=latest)](https://pyphpbb-sl.readthedocs.io/en/latest/?badge=latest)
+
 # pyphpbb-sl
 
 Interract with phpbb forums.
@@ -13,9 +15,6 @@ pip install git+https://github.com/Sergeileduc/pyphpbb-sl.git
 
 or put this line in your `requirements.txt`
 `git+https://github.com/Sergeileduc/pyphpbb-sl.git`
-
-[![Documentation Status](https://readthedocs.org/projects/pyphpbb-sl/badge/?version=latest)](https://pyphpbb-sl.readthedocs.io/en/latest/?badge=latest)
-
 
 ### Usage
 
