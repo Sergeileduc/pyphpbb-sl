@@ -6,10 +6,38 @@ Interract with phpbb forums.
 * Free software: MIT license
 * Documentation: 
 
+## Installation
+```shell
+pip install git+https://github.com/Sergeileduc/pyphpbb-sl.git
+```
 
-### Features
+or put this line in your `requirements.txt`
+`git+https://github.com/Sergeileduc/pyphpbb-sl.git`
 
-* TODO
+### Usage
+
+```python
+from pyphpbb_sl import PhpBB
+
+
+host = "http://myforum.fr/"
+username = "Username"
+password = "Pass1234"
+
+phpbb = PhpBB(host)
+phpbb.login(username, password)
+
+receiver = "ReceiverPseudo"
+subject = "Sent from Python"
+message = "Message sent from Python.\nSee yah !"
+
+phpbb.send_private_message(receiver=receiver,
+                           subject=subject,
+                           message=message)
+
+phpbb.logout()
+phpbb.close()
+```
 
 ### Credits
 
