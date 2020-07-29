@@ -1,5 +1,7 @@
-Welcome to pyphpbb-sl's documentation!
-======================================
+.. mdinclude:: ../README.md
+
+Contents
+--------
 
 .. toctree::
    :maxdepth: 2
