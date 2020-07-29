@@ -6,7 +6,7 @@ Interract with phpbb forums.
 
 
 * Free software: MIT license
-* Documentation: 
+* Documentation: https://pyphpbb-sl.readthedocs.io/
 
 ## Installation
 ```shell
