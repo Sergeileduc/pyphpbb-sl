@@ -97,7 +97,21 @@ html_theme = 'alabaster'
 # theme further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {}
+html_theme_options = {
+    'description': 'python phpbb',
+    'github_button': True,
+    'github_user': 'Sergeileduc',
+    'github_repo': 'pyphpbb-sl',
+    'github_banner': False,
+    'github_type': 'mark',
+    'github_count': False,
+    'codecov_button': False,
+    'travis_button': False,
+    'font_family': "'Roboto', Georgia, sans",
+    'head_font_family': "'Roboto', Georgia, serif",
+    'code_font_family': "'Roboto Mono', 'Consolas', monospace",
+    # 'pre_bg': '#433e56'
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
