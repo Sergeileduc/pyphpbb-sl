@@ -18,7 +18,7 @@ To install specific version (git tag) :
 
 .. code-block:: console
 
-    $ pip install git+https://github.com/Sergeileduc/pyphpbb-sl.git@v0.2.1
+    $ pip install git+https://github.com/Sergeileduc/pyphpbb-sl.git@v0.3.0
 
 This is the preferred method to install pyphpbb-sl, as it will always install the most recent stable release.
 
