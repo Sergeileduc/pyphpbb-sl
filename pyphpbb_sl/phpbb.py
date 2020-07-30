@@ -41,6 +41,15 @@ class PhpBB(object):
             print(e)
             sys.exit(1)
 
+    def __enter__(self):
+        # here we return the object we can use with `as` in a context manager `with`  # noqa: E501
+        return self
+
+    def __exit__(self, type, value, traceback):
+        if self.is_logged:
+            self.logout()
+        self.close()
+
     def is_logged(self):
         """Check if logged in."""
         u = self._get_user_id()
