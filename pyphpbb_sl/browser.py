@@ -25,11 +25,13 @@ class Browser:
             self._ownsession = True
 
     async def close(self):
+        """Close aiohttp session if created by self."""
         if self._ownsession:
             await self.session.close()
 
     @staticmethod
     def html2soup(html):
+        """Convert text to BeautifulSoup."""
         return BeautifulSoup(html, "html.parser")
 
     async def get_html(self, url):
