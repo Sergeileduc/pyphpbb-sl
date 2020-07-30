@@ -21,17 +21,23 @@ cookie_u_pattern = r'phpbb\d?_.*_u'  # new cookie regex
 cookie_sid_pattern = r'phpbb\d?_.*_sid'  # new cookie regex
 
 
-class PhpBB(object):
+class PhpBB:
     """Class to interract with phpBB forum."""
 
     form_id = 'postform'
     private_mess_url = 'ucp.php?i=pm&mode=compose'
 
-    def __init__(self, host):
-        """Init object with forum url (host) and Browser object."""
+    def __init__(self, host, loop=None, session=None):
+        """Init object with host url.
+
+        Args:
+            host (str): url of phpbb forum
+            loop (Event Loop, optional): event loop. Defaults to None. (asyncio.get_event_loop())
+            session (aiohttp.ClientSession, optional). Defaults to None.
+        """  # noqa: E501
         self.host = host
         try:
-            self.browser = Browser()
+            self.browser = Browser(loop=loop, session=session)
         except HTTPError as e:  # pragma: no cover
             logger.error(e)
             sys.exit(1)
@@ -40,7 +46,7 @@ class PhpBB(object):
         # here we return the object we can use with `as` in a context manager `with`  # noqa: E501
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type_, value, traceback):
         if self.is_logged():
             self.logout()
         self.close()
@@ -49,7 +55,7 @@ class PhpBB(object):
         # here we return the object we can use with `as` in a context manager `async with`  # noqa: E501
         return self
 
-    async def __aexit__(self, type, value, traceback):
+    async def __aexit__(self, type_, value, traceback):
         if self.is_logged():
             await self.logout()
         await self.close()
@@ -58,27 +64,28 @@ class PhpBB(object):
         """Check if logged in."""
         u = self._get_user_id()
         if u != 1:
-            logger.info(f"login OK : {str(u)}")
+            logger.info("login OK : %s", str(u))
             return True
-        else:
-            logger.info(f"login failed : {str(u)}")
-            return False
+
+        logger.info("login failed : %s", str(u))
+        return False
 
     def is_logged_out(self):
         """Check if logged out."""
         u = self._get_user_id()
         if u != 1:
-            logger.info(f"Still logged in : {str(u)}")
+            logger.info("Still logged in : %s", str(u))
             return True
-        else:
-            logger.info(f"Signed out : {str(u)}")
-            return False
+
+        logger.info("Signed out : %s", str(u))
+        return False
 
     def _get_user_id(self):
         cookies = self.browser.list_cookies()
         for cookie in cookies:
             if re.search(cookie_u_pattern, cookie.key):
                 return int(cookie.value)
+        return None
 
     def _get_sid(self):
         cookies = self.browser.list_cookies()
@@ -86,6 +93,7 @@ class PhpBB(object):
             if re.search(cookie_sid_pattern, cookie.key):
                 sid = cookie.value
                 return sid
+        return None
 
     async def login(self, username, password):
         """Log in phpBB forum."""
@@ -171,18 +179,18 @@ class PhpBB(object):
 
     async def send_private_message(self, receiver, subject, message):
         """Send private message."""
-        logger.info(f"Trying to send private message to {receiver}")
+        logger.info("Trying to send private message to %s", receiver)
         url = urljoin(self.host, self.private_mess_url)
         urlrep1, payload1 = await self._make_add_receiver_payload(url, receiver)  # noqa: E501
         await asyncio.sleep(2)
 
         # Add receiver
-        r = await self.browser.session.post(urlrep1,
-                                            # headers=headers,
-                                            # params=self.login_mode,
-                                            data=payload1)
+        resp = await self.browser.session.post(urlrep1,
+                                               # headers=headers,
+                                               # # params=self.login_mode,
+                                               data=payload1)
 
-        receiverid = PhpBB.parse_resp_find_receiver_id(await r.text())
+        receiverid = PhpBB.parse_resp_find_receiver_id(await resp.text())
 
         if receiverid is None:
             return

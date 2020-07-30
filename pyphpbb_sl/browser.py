@@ -2,20 +2,23 @@
 # -*-coding:utf-8 -*-
 """Module to handle HTTP requests (with requests lib)."""
 
-import aiohttp
 from urllib.error import HTTPError
+import aiohttp
 from bs4 import BeautifulSoup
 
 
 class Browser:
     """Class to make HTTP requests."""
 
-    def __init__(self):
+    def __init__(self, loop=None, session=None):
         """Init Browser with a requests.Session()."""
-        try:
-            self.session = aiohttp.ClientSession()
-        except HTTPError as e:  # pragma: no cover
-            raise e
+        if session is None:
+            try:
+                self.session = aiohttp.ClientSession(loop=loop)
+            except HTTPError as e:  # pragma: no cover
+                raise e
+        else:
+            self.session = session
 
     async def close(self):
         await self.session.close()
@@ -60,21 +63,19 @@ class Browser:
         try:
             inputs = soup.find_all("input")
             values = {}
-            for input in inputs:
-                if (
-                    input.get("type") == "submit"
-                    or not input.get("name")
-                    or not input.get("value")
-                ):
+            for inp in inputs:
+                if (inp.get("type") == "submit"
+                        or not inp.get("name")
+                        or not inp.get("value")):
                     continue
-                values[input["name"]] = input["value"]
+                values[inp["name"]] = inp["value"]
             return {"values": values, "action": soup["action"]}
         except AttributeError as e:  # pragma: no cover
             print("Attribute Error : " + str(e))
-            return
+            return None
         except KeyError as e:  # pragma: no cover
             print("Key Error code : " + str(e))
-            return
+            return None
 
     async def select_tag(self, url, tag):
         """Select tag in soup and return dict (name:value)."""
@@ -88,4 +89,4 @@ class Browser:
 
     def list_cookies(self):
         """List session cookies."""
-        return [cookie for cookie in self.session.cookie_jar]
+        return self.session.cookie_jar
