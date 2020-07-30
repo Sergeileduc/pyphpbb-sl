@@ -2,7 +2,7 @@
 
 __author__ = """Sergeileduc"""
 __email__ = 'sergei.leduc@gmail.com'
-__version__ = '0.2.0'
+__version__ = '0.2.1'
 
 
 from .phpbb import PhpBB
