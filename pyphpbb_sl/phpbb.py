@@ -174,7 +174,8 @@ class PhpBB:
             pattern_uid = r"address_list\[u\]\[(?P<UID>\d+)\]"
             matches = re.search(pattern_uid, user["name"])
             return matches.group("UID")
-        except KeyError:
+        except (KeyError, TypeError):
+            logger.error("Cant't add receiver, probably not a valid pseudonyme")  # noqa: E501
             return None
 
     async def send_private_message(self, receiver, subject, message):
@@ -193,7 +194,7 @@ class PhpBB:
         receiverid = PhpBB.parse_resp_find_receiver_id(await resp.text())
 
         if receiverid is None:
-            return
+            return False
 
         urlrep2, payload2 = await self._make_private_message_payload(url, receiverid, subject, message)  # noqa: E501
 
@@ -204,3 +205,4 @@ class PhpBB:
                                         # headers=headers,
                                         # params=self.login_mode,
                                         data=payload2)
+        return True
