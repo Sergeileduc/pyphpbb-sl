@@ -11,14 +11,13 @@ class Browser:
     """Class to make HTTP requests."""
 
     def __init__(self, loop=None, session=None):
-        """Init Browser with a requests.Session()."""
-        if session is None:
-            try:
-                self.session = aiohttp.ClientSession(loop=loop)
-            except HTTPError as e:  # pragma: no cover
-                raise e
-        else:
-            self.session = session
+        """Initiate browser with given aiohttpsession, or create one.
+
+        Args:
+            loop (Event Loop, optional): asyncio event Loop. Defaults to None.
+            session (aiohttp.session, optional): session. Defaults to None.
+        """
+        self.session = session if session else aiohttp.ClientSession(loop=loop)
 
     async def close(self):
         await self.session.close()
