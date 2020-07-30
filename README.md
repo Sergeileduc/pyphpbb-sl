@@ -16,6 +16,9 @@ pip install git+https://github.com/Sergeileduc/pyphpbb-sl.git
 or put this line in your `requirements.txt`
 `git+https://github.com/Sergeileduc/pyphpbb-sl.git`
 
+To install specific version (git tag), use the following syntax with `@`:
+`pip install git+https://github.com/Sergeileduc/pyphpbb-sl.git@v0.2.0`
+
 ### Features
 * Log-in
 * Send Private-Messages
