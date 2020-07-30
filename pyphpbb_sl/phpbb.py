@@ -3,6 +3,7 @@
 """Module to interract with phpBB forum."""
 
 
+import logging
 import re
 import time
 import sys
@@ -10,6 +11,8 @@ from urllib.parse import urljoin
 from urllib.error import HTTPError
 
 from .browser import Browser
+
+logger = logging.getLogger(__name__)
 
 ucp_url = 'ucp.php'
 login_mode = {'mode': 'login'}
@@ -30,7 +33,7 @@ class PhpBB(object):
         try:
             self.browser = Browser()
         except HTTPError as e:
-            print(e)
+            logger.error(e)
             sys.exit(1)
 
     def __del__(self):
@@ -38,7 +41,7 @@ class PhpBB(object):
         try:
             self.browser.session.close()
         except HTTPError as e:
-            print(e)
+            logger.error(e)
             sys.exit(1)
 
     def __enter__(self):
@@ -54,20 +57,20 @@ class PhpBB(object):
         """Check if logged in."""
         u = self._get_user_id()
         if u != 1:
-            print(f"login OK : {str(u)}")
+            logger.info(f"login OK : {str(u)}")
             return True
         else:
-            print(f"login failed : {str(u)}")
+            logger.info(f"login failed : {str(u)}")
             return False
 
     def is_logged_out(self):
         """Check if logged out."""
         u = self._get_user_id()
         if u != 1:
-            print(f"Still logged in : {str(u)}")
+            logger.info(f"Still logged in : {str(u)}")
             return True
         else:
-            print(f"Signed out : {str(u)}")
+            logger.info(f"Signed out : {str(u)}")
             return False
 
     def _get_user_id(self):
@@ -97,7 +100,7 @@ class PhpBB(object):
             return self.is_logged()
 
         except HTTPError as e:
-            print(e)
+            logger.error(e)
             return False
 
     def logout(self):
@@ -112,7 +115,7 @@ class PhpBB(object):
                               params=params)
             return self.is_logged_out()
         except HTTPError as e:
-            print(e)
+            logger.error(e)
             return False
 
     def close(self):
@@ -120,7 +123,7 @@ class PhpBB(object):
         try:
             self.browser.session.close()
         except HTTPError as e:
-            print(e)
+            logger.error(e)
             sys.exit(1)
 
     def _make_add_receiver_payload(self, url, receiver):
@@ -165,6 +168,7 @@ class PhpBB(object):
 
     def send_private_message(self, receiver, subject, message):
         """Send private message."""
+        logger.info(f"Trying to send private message to {receiver}")
         url = urljoin(self.host, self.private_mess_url)
         urlrep1, payload1 = self._make_add_receiver_payload(url, receiver)
         time.sleep(2)

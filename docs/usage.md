@@ -5,7 +5,10 @@ To use pyphpbb-sl in a project::
 To send *Private Message* :
 
 ```python
+import logging
 from pyphpbb_sl import PhpBB
+
+logging.basicConfig(level=logging.INFO)
 
 # Credentials
 host = "http://myforum.fr/"
@@ -32,7 +35,10 @@ phpbb.close()
 You can also use a context manager with the keyword `with`(automatic logout and close)
 
 ```python
+import logging
 from pyphpbb_sl import PhpBB
+
+logging.basicConfig(level=logging.INFO)
 
 # Credentials
 host = "http://myforum.fr/"

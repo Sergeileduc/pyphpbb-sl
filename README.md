@@ -17,7 +17,7 @@ or put this line in your `requirements.txt`
 `git+https://github.com/Sergeileduc/pyphpbb-sl.git`
 
 To install specific version (git tag), use the following syntax with `@`:
-`pip install git+https://github.com/Sergeileduc/pyphpbb-sl.git@v0.2.0`
+`pip install git+https://github.com/Sergeileduc/pyphpbb-sl.git@v0.2.1`
 
 ### Features
 * Log-in
@@ -27,7 +27,10 @@ To install specific version (git tag), use the following syntax with `@`:
 To send *Private Message* :
 
 ```python
+import logging
 from pyphpbb_sl import PhpBB
+
+logging.basicConfig(level=logging.INFO)
 
 # Credentials
 host = "http://myforum.fr/"
@@ -54,7 +57,10 @@ phpbb.close()
 You can also use a context manager with the keyword `with`(automatic logout and close)
 
 ```python
+import logging
 from pyphpbb_sl import PhpBB
+
+logging.basicConfig(level=logging.INFO)
 
 # Credentials
 host = "http://myforum.fr/"
