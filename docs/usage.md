@@ -2,6 +2,8 @@
 
 To use pyphpbb-sl in a project::
 
+To send *Private Message* :
+
 ```python
 from pyphpbb_sl import PhpBB
 

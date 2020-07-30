@@ -16,7 +16,12 @@ pip install git+https://github.com/Sergeileduc/pyphpbb-sl.git
 or put this line in your `requirements.txt`
 `git+https://github.com/Sergeileduc/pyphpbb-sl.git`
 
+### Features
+* Log-in
+* Send Private-Messages
+
 ### Usage
+To send *Private Message* :
 
 ```python
 from pyphpbb_sl import PhpBB
