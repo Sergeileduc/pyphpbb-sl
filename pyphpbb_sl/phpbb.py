@@ -114,7 +114,7 @@ class PhpBB(object):
             r = await self.browser.post(forum_ucp,
                                         # headers=headers,
                                         params=params)
-            await r.text()
+            r.close()
             return self.is_logged_out()
         except HTTPError as e:
             logger.error(e)

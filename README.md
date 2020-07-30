@@ -18,7 +18,7 @@ or put this line in your `requirements.txt`
 
 To install specific version (git tag), use the following syntax with `@`:
 
-`pip install git+https://github.com/Sergeileduc/pyphpbb-sl.git@v0.3.0`
+`pip install git+https://github.com/Sergeileduc/pyphpbb-sl.git@v0.3.1`
 
 ### Features
 * Log-in
