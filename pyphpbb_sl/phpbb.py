@@ -63,7 +63,7 @@ class PhpBB:
     def is_logged(self):
         """Check if logged in."""
         u = self._get_user_id()
-        if u != 1:
+        if u != 1 and u is not None:
             logger.info("login OK : %s", str(u))
             return True
 
