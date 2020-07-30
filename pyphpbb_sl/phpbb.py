@@ -41,7 +41,7 @@ class PhpBB(object):
         return self
 
     def __exit__(self, type, value, traceback):
-        if self.is_logged:
+        if self.is_logged():
             self.logout()
         self.close()
 
@@ -50,7 +50,7 @@ class PhpBB(object):
         return self
 
     async def __aexit__(self, type, value, traceback):
-        if self.is_logged:
+        if self.is_logged():
             await self.logout()
         await self.close()
 
