@@ -132,7 +132,7 @@ class PhpBB:
         """Close request session (HTTP connection)."""
         try:
             await self.browser.close()
-            logger.info("Session closed")
+            logger.info("Browser closed")
         except HTTPError as e:  # pragma: no cover
             logger.error(e)
             sys.exit(1)

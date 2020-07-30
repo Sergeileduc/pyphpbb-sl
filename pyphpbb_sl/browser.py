@@ -17,10 +17,16 @@ class Browser:
             loop (Event Loop, optional): asyncio event Loop. Defaults to None.
             session (aiohttp.session, optional): session. Defaults to None.
         """
-        self.session = session if session else aiohttp.ClientSession(loop=loop)
+        if session:
+            self.session = session
+            self._ownsession = False
+        else:
+            self.session = aiohttp.ClientSession(loop=loop)
+            self._ownsession = True
 
     async def close(self):
-        await self.session.close()
+        if self._ownsession:
+            await self.session.close()
 
     @staticmethod
     def html2soup(html):
