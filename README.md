@@ -21,17 +21,19 @@ or put this line in your `requirements.txt`
 ```python
 from pyphpbb_sl import PhpBB
 
-
+# Credentials
 host = "http://myforum.fr/"
 username = "Username"
 password = "Pass1234"
 
-phpbb = PhpBB(host)
-phpbb.login(username, password)
-
+# Message
 receiver = "ReceiverPseudo"
 subject = "Sent from Python"
 message = "Message sent from Python.\nSee yah !"
+
+# Log in, Send, Logout
+phpbb = PhpBB(host)
+phpbb.login(username, password)
 
 phpbb.send_private_message(receiver=receiver,
                            subject=subject,
