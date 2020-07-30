@@ -32,7 +32,7 @@ class PhpBB(object):
         self.host = host
         try:
             self.browser = Browser()
-        except HTTPError as e:
+        except HTTPError as e:  # pragma: no cover
             logger.error(e)
             sys.exit(1)
 
@@ -45,7 +45,7 @@ class PhpBB(object):
             self.logout()
         self.close()
 
-    async def __aenter__(self) -> 'ClientSession':
+    async def __aenter__(self):
         # here we return the object we can use with `as` in a context manager `async with`  # noqa: E501
         return self
 
@@ -139,7 +139,7 @@ class PhpBB(object):
         payload = form['values']
         return url, payload
 
-    async def _make_private_message_payload(self, url, receiverid, subject, message):
+    async def _make_private_message_payload(self, url, receiverid, subject, message):  # noqa: E501
         form = await self.browser.get_form(url, self.form_id)
         form['values']['subject'] = subject
         form['values']['message'] = message
@@ -173,7 +173,7 @@ class PhpBB(object):
         """Send private message."""
         logger.info(f"Trying to send private message to {receiver}")
         url = urljoin(self.host, self.private_mess_url)
-        urlrep1, payload1 = await self._make_add_receiver_payload(url, receiver)
+        urlrep1, payload1 = await self._make_add_receiver_payload(url, receiver)  # noqa: E501
         await asyncio.sleep(2)
 
         # Add receiver
