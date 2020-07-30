@@ -27,10 +27,9 @@ To install specific version (git tag), use the following syntax with `@`:
 To send *Private Message* :
 
 ```python
+import asyncio
 import logging
 from pyphpbb_sl import PhpBB
-
-logging.basicConfig(level=logging.INFO)
 
 # Credentials
 host = "http://myforum.fr/"
@@ -42,21 +41,26 @@ receiver = "ReceiverPseudo"
 subject = "Sent from Python"
 message = "Message sent from Python.\nSee yah !"
 
-# Log in, Send, Logout
-phpbb = PhpBB(host)
-phpbb.login(username, password)
+async def main():
+    # Here is the code :
+    phpbb = PhpBB(host)
+    await phpbb.login(username, password)
+    await phpbb.send_private_message(receiver=receiver,
+                                     subject=subject,
+                                     message=message)
 
-phpbb.send_private_message(receiver=receiver,
-                           subject=subject,
-                           message=message)
+    await phpbb.logout()
+    await phpbb.close()
 
-phpbb.logout()
-phpbb.close()
+# Run sample
+loop = asyncio.get_event_loop()
+loop.run_until_complete(main())
 ```
 
 You can also use a context manager with the keyword `with`(automatic logout and close)
 
 ```python
+import asyncio
 import logging
 from pyphpbb_sl import PhpBB
 
@@ -72,12 +76,17 @@ receiver = "ReceiverPseudo"
 subject = "Sent from Python"
 message = "Message sent from Python.\nSee yah !"
 
-# Context Manager
-with PhpBB(host) as phpbb:
-    phpbb.login(username, password)
-    phpbb.send_private_message(receiver=receiver,
-                               subject=subject,
-                               message=message)
+# With context manager
+async def main():
+    async with PhpBB(host) as phpbb:
+        await phpbb.login(username, password)
+        await phpbb.send_private_message(receiver=receiver,
+                                         subject=subject,
+                                         message=message)
+
+# Run sample
+loop = asyncio.get_event_loop()
+loop.run_until_complete(main())
 ```
 
 ### Credits

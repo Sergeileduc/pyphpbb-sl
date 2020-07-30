@@ -2,7 +2,7 @@
 # -*-coding:utf-8 -*-
 """Module to handle HTTP requests (with requests lib)."""
 
-import requests
+import aiohttp
 from urllib.error import HTTPError
 from bs4 import BeautifulSoup
 
@@ -13,15 +13,18 @@ class Browser:
     def __init__(self):
         """Init Browser with a requests.Session()."""
         try:
-            self.session = requests.Session()
+            self.session = aiohttp.ClientSession()
         except HTTPError as e:
             raise e
+
+    async def close(self):
+        await self.session.close()
 
     @staticmethod
     def html2soup(html):
         return BeautifulSoup(html, "html.parser")
 
-    def get_html(self, url):
+    async def get_html(self, url):
         """Return HTML soup with Beautiful Soup.
 
         Args:
@@ -34,18 +37,19 @@ class Browser:
         # headers = {}
         # headers['User-Agent'] = self.user_agent
         try:
-            r = self.session.get(url)
-            soup = Browser.html2soup(r.text)
+            r = await self.session.get(url)
+            soup = Browser.html2soup(await r.text())
             # print(soup)
             return soup
         except HTTPError as e:
             print("HTTP Error")
             print(e)
 
-    def get_form(self, url, form_id):
+    async def get_form(self, url, form_id):
         """Return form found in url as a dict."""
         try:
-            form = self.get_html(url).find("form", id=form_id)
+            soup = await self.get_html(url)
+            form = soup.find("form", id=form_id)
             return self._get_form_values(form)
         except HTTPError as e:
             print(e)
@@ -72,16 +76,16 @@ class Browser:
             print("Key Error code : " + str(e))
             return
 
-    def select_tag(self, url, tag):
+    async def select_tag(self, url, tag):
         """Select tag in soup and return dict (name:value)."""
-        soup = self.get_html(url)
+        soup = await self.get_html(url)
         items = soup.select(tag)
         return {i['name']: i['value'] for i in items if i.has_attr('value')}
 
-    def post(self, url, **kwargs):
+    async def post(self, url, **kwargs):
         """Send POST request using requests."""
-        return self.session.post(url, **kwargs)
+        return await self.session.post(url, **kwargs)
 
     def list_cookies(self):
         """List session cookies."""
-        return [cookie for cookie in self.session.cookies]
+        return [cookie for cookie in self.session.cookie_jar]

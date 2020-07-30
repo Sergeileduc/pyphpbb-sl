@@ -3,9 +3,9 @@
 """Module to interract with phpBB forum."""
 
 
+import asyncio
 import logging
 import re
-import time
 import sys
 from urllib.parse import urljoin
 from urllib.error import HTTPError
@@ -36,14 +36,6 @@ class PhpBB(object):
             logger.error(e)
             sys.exit(1)
 
-    def __del__(self):
-        """Close the session and delete object."""
-        try:
-            self.browser.session.close()
-        except HTTPError as e:
-            logger.error(e)
-            sys.exit(1)
-
     def __enter__(self):
         # here we return the object we can use with `as` in a context manager `with`  # noqa: E501
         return self
@@ -52,6 +44,15 @@ class PhpBB(object):
         if self.is_logged:
             self.logout()
         self.close()
+
+    async def __aenter__(self) -> 'ClientSession':
+        # here we return the object we can use with `as` in a context manager `async with`  # noqa: E501
+        return self
+
+    async def __aexit__(self, type, value, traceback):
+        if self.is_logged:
+            await self.logout()
+        await self.close()
 
     def is_logged(self):
         """Check if logged in."""
@@ -76,58 +77,60 @@ class PhpBB(object):
     def _get_user_id(self):
         cookies = self.browser.list_cookies()
         for cookie in cookies:
-            if re.search(cookie_u_pattern, cookie.name):
+            if re.search(cookie_u_pattern, cookie.key):
                 return int(cookie.value)
 
     def _get_sid(self):
         cookies = self.browser.list_cookies()
         for cookie in cookies:
-            if re.search(cookie_sid_pattern, cookie.name):
+            if re.search(cookie_sid_pattern, cookie.key):
                 sid = cookie.value
                 return sid
 
-    def login(self, username, password):
+    async def login(self, username, password):
         """Log in phpBB forum."""
         try:
             forum_ucp = urljoin(self.host, ucp_url)
-            payload = self.browser.select_tag(forum_ucp, "input")
+            payload = await self.browser.select_tag(forum_ucp, "input")
             # for key, value in payload.items():
             #     print(key, value)
             payload['username'] = username
             payload['password'] = password
-            time.sleep(1)
-            self.browser.post(forum_ucp, params=login_mode, data=payload)
+            await asyncio.sleep(1)
+            await self.browser.post(forum_ucp, params=login_mode, data=payload)
             return self.is_logged()
 
         except HTTPError as e:
             logger.error(e)
             return False
 
-    def logout(self):
+    async def logout(self):
         """Log out of phpBB forum."""
         try:
             # u_logout = Login(self.browser.session, self.host)
             # u_logout.send_logout()
             forum_ucp = urljoin(self.host, ucp_url)
             params = {'mode': 'logout', 'sid': self._get_sid()}
-            self.browser.post(forum_ucp,
-                              # headers=headers,
-                              params=params)
+            r = await self.browser.post(forum_ucp,
+                                        # headers=headers,
+                                        params=params)
+            await r.text()
             return self.is_logged_out()
         except HTTPError as e:
             logger.error(e)
             return False
 
-    def close(self):
+    async def close(self):
         """Close request session (HTTP connection)."""
         try:
-            self.browser.session.close()
+            await self.browser.close()
+            logger.info("Session closed")
         except HTTPError as e:
             logger.error(e)
             sys.exit(1)
 
-    def _make_add_receiver_payload(self, url, receiver):
-        form = self.browser.get_form(url, self.form_id)
+    async def _make_add_receiver_payload(self, url, receiver):
+        form = await self.browser.get_form(url, self.form_id)
         form['values']['username_list'] = receiver
         form['values']['add_to'] = "Ajouter"
         form['values']['addbbcode20'] = 100
@@ -136,8 +139,8 @@ class PhpBB(object):
         payload = form['values']
         return url, payload
 
-    def _make_private_message_payload(self, url, receiverid, subject, message):
-        form = self.browser.get_form(url, self.form_id)
+    async def _make_private_message_payload(self, url, receiverid, subject, message):
+        form = await self.browser.get_form(url, self.form_id)
         form['values']['subject'] = subject
         form['values']['message'] = message
         form['values']['addbbcode20'] = 100
@@ -166,30 +169,30 @@ class PhpBB(object):
         except KeyError:
             return None
 
-    def send_private_message(self, receiver, subject, message):
+    async def send_private_message(self, receiver, subject, message):
         """Send private message."""
         logger.info(f"Trying to send private message to {receiver}")
         url = urljoin(self.host, self.private_mess_url)
-        urlrep1, payload1 = self._make_add_receiver_payload(url, receiver)
-        time.sleep(2)
+        urlrep1, payload1 = await self._make_add_receiver_payload(url, receiver)
+        await asyncio.sleep(2)
 
         # Add receiver
-        r = self.browser.session.post(urlrep1,
-                                      # headers=headers,
-                                      # # params=self.login_mode,
-                                      data=payload1)
+        r = await self.browser.session.post(urlrep1,
+                                            # headers=headers,
+                                            # params=self.login_mode,
+                                            data=payload1)
 
-        receiverid = PhpBB.parse_resp_find_receiver_id(r.text)
+        receiverid = PhpBB.parse_resp_find_receiver_id(await r.text())
 
         if receiverid is None:
             return
 
-        urlrep2, payload2 = self._make_private_message_payload(url, receiverid, subject, message)  # noqa: E501
+        urlrep2, payload2 = await self._make_private_message_payload(url, receiverid, subject, message)  # noqa: E501
 
-        time.sleep(2)
+        await asyncio.sleep(2)
 
         # Send message
-        self.browser.session.post(urlrep2,
-                                  # headers=headers,
-                                  # params=self.login_mode,
-                                  data=payload2)
+        await self.browser.session.post(urlrep2,
+                                        # headers=headers,
+                                        # params=self.login_mode,
+                                        data=payload2)
