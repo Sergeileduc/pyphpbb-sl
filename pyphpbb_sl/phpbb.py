@@ -100,7 +100,7 @@ class PhpBB(object):
             await self.browser.post(forum_ucp, params=login_mode, data=payload)
             return self.is_logged()
 
-        except HTTPError as e:
+        except HTTPError as e:  # pragma: no cover
             logger.error(e)
             return False
 
@@ -116,7 +116,7 @@ class PhpBB(object):
                                         params=params)
             r.close()
             return self.is_logged_out()
-        except HTTPError as e:
+        except HTTPError as e:  # pragma: no cover
             logger.error(e)
             return False
 
@@ -125,7 +125,7 @@ class PhpBB(object):
         try:
             await self.browser.close()
             logger.info("Session closed")
-        except HTTPError as e:
+        except HTTPError as e:  # pragma: no cover
             logger.error(e)
             sys.exit(1)
 

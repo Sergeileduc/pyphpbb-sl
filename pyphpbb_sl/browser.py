@@ -14,7 +14,7 @@ class Browser:
         """Init Browser with a requests.Session()."""
         try:
             self.session = aiohttp.ClientSession()
-        except HTTPError as e:
+        except HTTPError as e:  # pragma: no cover
             raise e
 
     async def close(self):
@@ -41,7 +41,7 @@ class Browser:
             soup = Browser.html2soup(await r.text())
             # print(soup)
             return soup
-        except HTTPError as e:
+        except HTTPError as e:  # pragma: no cover
             print("HTTP Error")
             print(e)
 
@@ -51,7 +51,7 @@ class Browser:
             soup = await self.get_html(url)
             form = soup.find("form", id=form_id)
             return self._get_form_values(form)
-        except HTTPError as e:
+        except HTTPError as e:  # pragma: no cover
             print(e)
             raise
 
@@ -69,10 +69,10 @@ class Browser:
                     continue
                 values[input["name"]] = input["value"]
             return {"values": values, "action": soup["action"]}
-        except AttributeError as e:
+        except AttributeError as e:  # pragma: no cover
             print("Attribute Error : " + str(e))
             return
-        except KeyError as e:
+        except KeyError as e:  # pragma: no cover
             print("Key Error code : " + str(e))
             return
 
