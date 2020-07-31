@@ -5,3 +5,4 @@ pytest-runner
 asynctest
 pytest-asyncio
 python-dotenv
+pytest-cov
