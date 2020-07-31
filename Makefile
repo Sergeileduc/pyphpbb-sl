@@ -48,9 +48,12 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr .pytest_cache
 
 lint: ## check style with flake8
-	flake8 pyphpbb_sl tests
+	flake8 pyphpbb_sl examples tests examples
 
 test: ## run tests quickly with the default Python
+	pytest tests/test_pyphpbb_sl.py
+
+fulltest: ## run tests quickly with the default Python
 	pytest
 
 test-all: ## run tests on every Python version with tox
