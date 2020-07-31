@@ -45,7 +45,7 @@ jobs:
       run: |
         pip install -r requirements-test.txt
         pip install .
-        pytest --cov=pyphpbb_sl
+        pytest --cov=pyphpbb_sl --cov-report xml
 
     - name: Upload coverage reports to Codecov
       env: # Or as an environment variable
