@@ -48,11 +48,11 @@ jobs:
         pytest
 
     - name: Upload coverage reports to Codecov
+      env: # Or as an environment variable
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       run: |
         pip install codecov
         codecov
-      env: # Or as an environment variable
-        super_secret: ${{ secrets.CODECOV_TOKEN }}
 
   clean:
     needs: build
