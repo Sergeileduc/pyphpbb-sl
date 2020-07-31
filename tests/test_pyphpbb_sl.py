@@ -3,8 +3,8 @@
 """Tests for `pyphpbb_sl` package."""
 
 from collections import namedtuple
-import pytest
 
+import pytest
 
 from pyphpbb_sl import PhpBB
 

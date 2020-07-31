@@ -18,6 +18,8 @@ UCP_URL = 'ucp.php'
 LOGIN_MODE = {'mode': 'login'}
 LOGOUT_MODE = {'mode': 'logout'}
 MESSAGE_COMPOSE = {'i': 'pm', 'mode': 'compose'}
+INBOX = {'i': 'pm', 'folder': 'inbox'}
+SUBMIT = 'Envoyer'
 COOKIE_U_PATTERN = r'phpbb\d?_.*_u'  # new cookie regex
 COOKIE_SID_PATTERN = r'phpbb\d?_.*_sid'  # new cookie regex
 
@@ -37,6 +39,7 @@ class PhpBB:
             session (aiohttp.ClientSession, optional). Defaults to None.
         """  # noqa: E501
         self.host = host
+        self.unread_messages = []  # Private Messages Inbox unread messages
         try:
             self.browser = Browser(loop=loop, session=session)
         except HTTPError as e:  # pragma: no cover
@@ -156,7 +159,7 @@ class PhpBB:
         form['values'][f'address_list[u][{receiverid}]'] = "to"
         form['values']['icon'] = 0
         # del form['values']['icon']
-        form['values']['post'] = 'Envoyer'
+        form['values']['post'] = SUBMIT
         url = urljoin(self.host, form['action'])
         payload = form['values']
         return url, payload
@@ -205,3 +208,41 @@ class PhpBB:
                                         # headers=headers,
                                         data=payload2)
         return True
+
+    @staticmethod
+    def _parse_inbox_mess(soup_item):
+        raw = soup_item.find("a", class_="topictitle")
+        sender = soup_item.find("a", class_=["username", "username-coloured"]).text  # noqa: E501
+        return {'subject': raw.text,
+                'url': raw["href"],
+                'from_': sender,
+                'unread': True,
+                'content': None}
+
+    async def fetch_unread_messages(self):
+        """Fetch private messages inbox and return short descriptions.
+
+        Return list of dicts.
+        """
+        url = urljoin(self.host, UCP_URL)
+        soup = await self.browser.get_html(url, params=INBOX)
+        raw_unread_list = soup.find_all("dl", class_="pm_unread")
+        self.unread_messages = [PhpBB._parse_inbox_mess(item) for item in raw_unread_list]  # noqa: E501
+        return self.unread_messages
+
+    def find_expected_message_by_user(self, sender_name):
+        """Find message in unread_messages by sender name. Return first found.
+        """
+        for message in self.unread_messages:
+            if message['from_'] == sender_name:
+                return message
+        return None
+
+    async def read_private_message(self, message_dict):
+        """Read private message."""
+        url = urljoin(self.host, message_dict['url'])
+        soup = await self.browser.get_html(url)
+        content = soup.find("div", class_="content")
+        message_dict['unread'] = False
+        message_dict['content'] = content.text
+        return message_dict
