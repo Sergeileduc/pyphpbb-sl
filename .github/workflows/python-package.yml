@@ -46,3 +46,32 @@ jobs:
         pip install -r requirements-test.txt
         pip install .
         pytest
+
+  clean:
+    needs: build
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 pytest
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    - name: clean forum messages sent by the test
+      env: # Or as an environment variable
+        HOST: ${{ secrets.HOST }}
+        SENDER_NAME: ${{ secrets.SENDER_NAME }}
+        SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
+        RECEIVER_NAME: ${{ secrets.RECEIVER_NAME }}
+        RECEIVER_PASSWORD: ${{ secrets.RECEIVER_PASSWORD }}
+      run: |
+        pip install .
+        python examples/08-clean-both-accounts-inbox-and-sent.py
