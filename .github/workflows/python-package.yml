@@ -74,4 +74,5 @@ jobs:
         RECEIVER_PASSWORD: ${{ secrets.RECEIVER_PASSWORD }}
       run: |
         pip install .
+        pip install python-dotenv
         python examples/08-clean-both-accounts-inbox-and-sent.py
