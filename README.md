@@ -27,7 +27,8 @@ To install specific version (git tag), use the following syntax with `@`:
 * Send Private-Messages
 
 ### Usage
-To send *Private Message* :
+
+#### To send *Private Message* :
 
 ```python
 import asyncio
@@ -88,6 +89,146 @@ async def main():
                                          message=message)
 
 # Run sample
+loop = asyncio.get_event_loop()
+loop.run_until_complete(main())
+```
+
+#### To read *Private Message* :
+```python
+import asyncio
+import logging
+from pyphpbb_sl import PhpBB
+
+logging.basicConfig(level=logging.INFO)
+
+host = "http://myforum.fr/"
+username = "Username"
+password = "Pass1234"
+
+
+# Context Manager code
+async def main():
+    async with PhpBB(host) as phpbb:
+        await phpbb.login(username, password)
+        unread_mess_list = await phpbb.fetch_unread_messages()
+        print("Here are your unread messages :")
+        print(*unread_mess_list, sep='\n')
+
+        print("\nHere are the contents of messages (messages have been marked as read) :")
+        for unread_mess in unread_mess_list:
+            message = await phpbb.read_private_message(unread_mess)
+            print(message)
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(main())
+```
+
+Ouput :
+
+```shell
+Here are your unread messages :
+{'subject': 'Sent by python. Number 2', 'url': './ucp.php?i=pm&mode=view&f=0&p=11822', 'from_': 'Foo', 'unread': True, 'content': None}
+{'subject': 'Sent by python. Number 1', 'url': './ucp.php?i=pm&mode=view&f=0&p=11821', 'from_': 'Bar', 'unread': True, 'content': None}
+
+Here are the contents of messages (messages have been marked as read
+{'subject': 'Sent by python. Number 2', 'url': './ucp.php?i=pm&mode=view&f=0&p=11822', 'from_': 'Foo', 'unread': False, 'content': 'This message was sent by python. Number 2'}
+{'subject': 'Sent by python. Number 1', 'url': './ucp.php?i=pm&mode=view&f=0&p=11821', 'from_': 'Bar', 'unread': False, 'content': 'This message was sent by python. Number 1'}
+```
+
+#### To read *Private Message* from expected user:
+```python
+import asyncio
+import logging
+from pyphpbb_sl import PhpBB
+
+logging.basicConfig(level=logging.INFO)
+
+host = "http://myforum.fr/"
+username = "Username"
+password = "Pass1234"
+
+expect_message_from_username = "OtherName"
+
+
+# Context Manager code
+async def main():
+    async with PhpBB(host) as phpbb:
+        await phpbb.login(username_server, password_server)
+        await phpbb.fetch_unread_messages()
+        message_to_read = phpbb.find_expected_message_by_user(expect_message_from_username)
+        if message_to_read:
+            message = await phpbb.read_private_message(message_to_read)
+            print(message)
+
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(main())
+```
+
+#### To validate a token :
+
+In next code, we will :
+- generate a token
+- *not in code* : give the token to your user (by Discord, mail, etc...)
+- fetch our inbox every 30 seconds in a loop (with 5 minutes timeout)
+- read message from our expected user
+- compare token and message content to validate or not
+
+```python
+import asyncio
+import logging
+from secrets import token_hex
+import time
+from pyphpbb_sl import PhpBB
+
+logging.basicConfig(level=logging.INFO)
+
+host = "http://myforum.fr/"
+username = "Username"
+password = "Pass1234"
+
+expect_message_from_username = "OtherName"
+
+token = token_hex(16)
+
+# Here we pretend that we give the token to our user {OtherName}, by mail, discord, etc...
+
+async def try_to_verify(username):
+    """Fetch unread mail and try to read PM from OtherName.
+
+    Compare PM content to token.
+    """
+    # Connect to phpbb forum and fetch unread PM
+    async with PhpBB(host) as phpbb:
+        await phpbb.login(username_server, password_server)
+        await phpbb.fetch_unread_messages()
+        # Read message from expected user
+        message_to_read = phpbb.find_expected_message_by_user(expect_message_from_username)
+        if message_to_read:
+            message = await phpbb.read_private_message(message_to_read)
+            if message['content'] == token:
+                print("Valid token ! GOOD")
+                return True
+            else:
+                print("Invalid token ! BAD !")
+                return False
+        return False
+
+
+async def main():
+    """Main loop : lauch try_to_verify() every 30 seconds, with a 5 minutes timeout."""
+    print(f"Please send me the token :\n{token}")
+    timeout = time.time() + 5 * 60   # 5 minutes from now
+    while True:
+        await asyncio.sleep(30)  # will fetch PM every 30 seconds
+        if time.time() > timeout:
+            break
+        valid = await try_to_verify(expect_message_from_username)
+        if valid:
+            # do_stuff()
+            break
+
+
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
 ```
