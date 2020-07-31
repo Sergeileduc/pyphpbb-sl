@@ -55,6 +55,7 @@ test: ## run tests quickly with the default Python
 
 fulltest: ## run tests quickly with the default Python
 	pytest
+	python examples/08-clean-both-accounts-inbox-and-sent.py
 
 test-all: ## run tests on every Python version with tox
 	tox

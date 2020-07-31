@@ -91,7 +91,7 @@ class Browser:
         return {i['name']: i['value'] for i in items if i.has_attr('value')}
 
     async def post(self, url, **kwargs):
-        """Send POST request using requests."""
+        """Send POST request using aiohttp."""
         return await self.session.post(url, **kwargs)
 
     def list_cookies(self):

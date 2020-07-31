@@ -204,9 +204,9 @@ class PhpBB:
         await asyncio.sleep(2)
 
         # Add receiver
-        resp = await self.browser.session.post(urlrep1,
-                                               # headers=headers,
-                                               data=payload1)
+        resp = await self.browser.post(urlrep1,
+                                       # headers=headers,
+                                       data=payload1)
 
         receiverid = PhpBB.parse_resp_find_receiver_id(await resp.text())
 
@@ -218,9 +218,9 @@ class PhpBB:
         await asyncio.sleep(2)
 
         # Send message
-        await self.browser.session.post(urlrep2,
-                                        # headers=headers,
-                                        data=payload2)
+        await self.browser.post(urlrep2,
+                                # headers=headers,
+                                data=payload2)
         return True
 
     @staticmethod
@@ -275,8 +275,8 @@ class PhpBB:
 
     async def delete_mp(self, message):
         url, payload = await self._make_delete_mp_payload(message)
-        await self.browser.session.post(url,
-                                        # headers=headers,
-                                        data=payload)
+        await self.browser.post(url,
+                                # headers=headers,
+                                data=payload)
         logging.info("message deleted : %s", message['url'][-7:])
         return True
