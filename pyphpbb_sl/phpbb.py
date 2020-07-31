@@ -14,18 +14,19 @@ from .browser import Browser
 
 logger = logging.getLogger(__name__)
 
-ucp_url = 'ucp.php'
-login_mode = {'mode': 'login'}
-logout_mode = {'mode': 'logout'}
-cookie_u_pattern = r'phpbb\d?_.*_u'  # new cookie regex
-cookie_sid_pattern = r'phpbb\d?_.*_sid'  # new cookie regex
+UCP_URL = 'ucp.php'
+LOGIN_MODE = {'mode': 'login'}
+LOGOUT_MODE = {'mode': 'logout'}
+MESSAGE_COMPOSE = {'i': 'pm', 'mode': 'compose'}
+COOKIE_U_PATTERN = r'phpbb\d?_.*_u'  # new cookie regex
+COOKIE_SID_PATTERN = r'phpbb\d?_.*_sid'  # new cookie regex
 
 
 class PhpBB:
     """Class to interract with phpBB forum."""
 
-    form_id = 'postform'
-    private_mess_url = 'ucp.php?i=pm&mode=compose'
+    FORM_ID = 'postform'
+    # private_mess_url = 'ucp.php?i=pm&mode=compose'
 
     def __init__(self, host, loop=None, session=None):
         """Init object with host url.
@@ -64,7 +65,7 @@ class PhpBB:
         """Check if logged in."""
         u = self._get_user_id()
         if u != 1 and u is not None:
-            logger.info("login OK : %s", str(u))
+            logger.info("user is logged : %s", str(u))
             return True
 
         logger.info("login failed : %s", str(u))
@@ -83,14 +84,14 @@ class PhpBB:
     def _get_user_id(self):
         cookies = self.browser.list_cookies()
         for cookie in cookies:
-            if re.search(cookie_u_pattern, cookie.key):
+            if re.search(COOKIE_U_PATTERN, cookie.key):
                 return int(cookie.value)
         return None
 
     def _get_sid(self):
         cookies = self.browser.list_cookies()
         for cookie in cookies:
-            if re.search(cookie_sid_pattern, cookie.key):
+            if re.search(COOKIE_SID_PATTERN, cookie.key):
                 sid = cookie.value
                 return sid
         return None
@@ -98,14 +99,14 @@ class PhpBB:
     async def login(self, username, password):
         """Log in phpBB forum."""
         try:
-            forum_ucp = urljoin(self.host, ucp_url)
+            forum_ucp = urljoin(self.host, UCP_URL)
             payload = await self.browser.select_tag(forum_ucp, "input")
             # for key, value in payload.items():
             #     print(key, value)
             payload['username'] = username
             payload['password'] = password
             await asyncio.sleep(1)
-            await self.browser.post(forum_ucp, params=login_mode, data=payload)
+            await self.browser.post(forum_ucp, params=LOGIN_MODE, data=payload)
             return self.is_logged()
 
         except HTTPError as e:  # pragma: no cover
@@ -117,7 +118,7 @@ class PhpBB:
         try:
             # u_logout = Login(self.browser.session, self.host)
             # u_logout.send_logout()
-            forum_ucp = urljoin(self.host, ucp_url)
+            forum_ucp = urljoin(self.host, UCP_URL)
             params = {'mode': 'logout', 'sid': self._get_sid()}
             r = await self.browser.post(forum_ucp,
                                         # headers=headers,
@@ -138,7 +139,7 @@ class PhpBB:
             sys.exit(1)
 
     async def _make_add_receiver_payload(self, url, receiver):
-        form = await self.browser.get_form(url, self.form_id)
+        form = await self.browser.get_form(url, PhpBB.FORM_ID, params=MESSAGE_COMPOSE)  # noqa: E501
         form['values']['username_list'] = receiver
         form['values']['add_to'] = "Ajouter"
         form['values']['addbbcode20'] = 100
@@ -148,7 +149,7 @@ class PhpBB:
         return url, payload
 
     async def _make_private_message_payload(self, url, receiverid, subject, message):  # noqa: E501
-        form = await self.browser.get_form(url, self.form_id)
+        form = await self.browser.get_form(url, PhpBB.FORM_ID)
         form['values']['subject'] = subject
         form['values']['message'] = message
         form['values']['addbbcode20'] = 100
@@ -181,14 +182,13 @@ class PhpBB:
     async def send_private_message(self, receiver, subject, message):
         """Send private message."""
         logger.info("Trying to send private message to %s", receiver)
-        url = urljoin(self.host, self.private_mess_url)
+        url = urljoin(self.host, UCP_URL)
         urlrep1, payload1 = await self._make_add_receiver_payload(url, receiver)  # noqa: E501
         await asyncio.sleep(2)
 
         # Add receiver
         resp = await self.browser.session.post(urlrep1,
                                                # headers=headers,
-                                               # # params=self.login_mode,
                                                data=payload1)
 
         receiverid = PhpBB.parse_resp_find_receiver_id(await resp.text())
@@ -196,13 +196,12 @@ class PhpBB:
         if receiverid is None:
             return False
 
-        urlrep2, payload2 = await self._make_private_message_payload(url, receiverid, subject, message)  # noqa: E501
+        urlrep2, payload2 = await self._make_private_message_payload(urlrep1, receiverid, subject, message)  # noqa: E501
 
         await asyncio.sleep(2)
 
         # Send message
         await self.browser.session.post(urlrep2,
                                         # headers=headers,
-                                        # params=self.login_mode,
                                         data=payload2)
         return True

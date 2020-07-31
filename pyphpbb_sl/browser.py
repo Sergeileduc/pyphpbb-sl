@@ -34,7 +34,7 @@ class Browser:
         """Convert text to BeautifulSoup."""
         return BeautifulSoup(html, "html.parser")
 
-    async def get_html(self, url):
+    async def get_html(self, url, params=None):
         """Return HTML soup with Beautiful Soup.
 
         Args:
@@ -47,7 +47,7 @@ class Browser:
         # headers = {}
         # headers['User-Agent'] = self.user_agent
         try:
-            r = await self.session.get(url)
+            r = await self.session.get(url, params=params)
             soup = Browser.html2soup(await r.text())
             # print(soup)
             return soup
@@ -55,10 +55,10 @@ class Browser:
             print("HTTP Error")
             print(e)
 
-    async def get_form(self, url, form_id):
+    async def get_form(self, url, form_id, params=None):
         """Return form found in url as a dict."""
         try:
-            soup = await self.get_html(url)
+            soup = await self.get_html(url, params)
             form = soup.find("form", id=form_id)
             return self._get_form_values(form)
         except HTTPError as e:  # pragma: no cover
