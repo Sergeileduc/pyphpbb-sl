@@ -70,3 +70,29 @@ async def test_is_logged_fail(not_logged_cookies):
     async with PhpBB("http://dummy.io") as phpbb:
         phpbb.browser.list_cookies = mock_cookies
         assert not phpbb.is_logged()
+
+
+@pytest.fixture
+def message1():
+    return {'subject': 'Sent by python.',
+            'url': './ucp.php?i=pm&mode=view&f=0&p=11850',
+            'from_': 'Foobar', 'unread': True, 'content': None}
+
+
+def test__extract_mp_number_id1(message1):
+    f, p = PhpBB._extract_mp_number_id(message1)
+    assert f == 0
+    assert p == 11850
+
+
+@pytest.fixture
+def message2():
+    return {'subject': 'Sent by python.',
+            'url': './ucp.php?i=pm&mode=view&f=-1&p=11852',
+            'from_': 'Foobar', 'unread': True, 'content': None}
+
+
+def test__extract_mp_number_id2(message2):
+    f, p = PhpBB._extract_mp_number_id(message2)
+    assert f == -1
+    assert p == 11852

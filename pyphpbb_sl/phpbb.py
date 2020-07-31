@@ -7,6 +7,7 @@ import asyncio
 import logging
 import re
 import sys
+from functools import partialmethod
 from urllib.parse import urljoin
 from urllib.error import HTTPError
 
@@ -19,9 +20,11 @@ LOGIN_MODE = {'mode': 'login'}
 LOGOUT_MODE = {'mode': 'logout'}
 MESSAGE_COMPOSE = {'i': 'pm', 'mode': 'compose'}
 INBOX = {'i': 'pm', 'folder': 'inbox'}
+SENTBOX = {'i': 'pm', 'folder': 'sentbox'}
 SUBMIT = 'Envoyer'
 COOKIE_U_PATTERN = r'phpbb\d?_.*_u'  # new cookie regex
 COOKIE_SID_PATTERN = r'phpbb\d?_.*_sid'  # new cookie regex
+PM_ID_PATTERN = r"f=(?P<F>-?\d+)&p=(?P<P>\d+)"
 
 
 class PhpBB:
@@ -164,6 +167,17 @@ class PhpBB:
         payload = form['values']
         return url, payload
 
+    async def _make_delete_mp_payload(self, message):  # noqa: E501
+        f, p = PhpBB._extract_mp_number_id(message)
+        params = {'i': 'pm', 'mode': 'compose', 'action': 'delete',
+                  'f': f, 'p': p}
+        url = urljoin(self.host, UCP_URL)
+        form = await self.browser.get_form(url, "confirm", params=params)
+        form['values']['confirm'] = "Oui"
+        url = urljoin(self.host, form['action'])
+        payload = form['values']
+        return url, payload
+
     @staticmethod
     def parse_resp_find_receiver_id(html):
         """Parse html response after adding a receiver for private message.
@@ -219,16 +233,20 @@ class PhpBB:
                 'unread': True,
                 'content': None}
 
-    async def fetch_unread_messages(self):
+    async def fetch_box(self, class_, box=INBOX):
         """Fetch private messages inbox and return short descriptions.
 
         Return list of dicts.
         """
         url = urljoin(self.host, UCP_URL)
-        soup = await self.browser.get_html(url, params=INBOX)
-        raw_unread_list = soup.find_all("dl", class_="pm_unread")
+        soup = await self.browser.get_html(url, params=box)
+        raw_unread_list = soup.find_all("dl", class_=class_)
         self.unread_messages = [PhpBB._parse_inbox_mess(item) for item in raw_unread_list]  # noqa: E501
         return self.unread_messages
+
+    fetch_unread_messages = partialmethod(fetch_box, "pm_unread")
+    fetch_read_messages = partialmethod(fetch_box, "pm_read")
+    fetch_sent_messages = partialmethod(fetch_box, "pm_read", box=SENTBOX)
 
     def find_expected_message_by_user(self, sender_name):
         """Find message in unread_messages by sender name. Return first found.
@@ -246,3 +264,19 @@ class PhpBB:
         message_dict['unread'] = False
         message_dict['content'] = content.text
         return message_dict
+
+    @staticmethod
+    def _extract_mp_number_id(message):
+        """Extract f value and p value} in './ucp.php?i=pm&mode=view&f=0&p=11850'."""  # noqa: E501
+        match = re.search(PM_ID_PATTERN, message['url'])
+        f = int(match.group("F"))
+        p = int(match.group("P"))
+        return f, p
+
+    async def delete_mp(self, message):
+        url, payload = await self._make_delete_mp_payload(message)
+        await self.browser.session.post(url,
+                                        # headers=headers,
+                                        data=payload)
+        logging.info("message deleted : %s", message['url'][-7:])
+        return True
