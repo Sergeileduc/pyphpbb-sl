@@ -1,4 +1,5 @@
 -r requirements.txt
+-r requirements-test.txt
 
 bump2version
 wheel
@@ -6,9 +7,3 @@ watchdog
 flake8
 coverage
 Sphinx
-
-pytest
-pytest-runner
-asynctest
-pytest-asyncio
-python-dotenv
