@@ -11,3 +11,4 @@ pytest
 pytest-runner
 asynctest
 pytest-asyncio
+python-dotenv
