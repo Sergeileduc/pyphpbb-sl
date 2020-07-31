@@ -62,6 +62,7 @@ test-all: ## run tests on every Python version with tox
 
 coverage: ## check code coverage quickly with the default Python
 	coverage run --source pyphpbb_sl -m pytest
+	python examples/08-clean-both-accounts-inbox-and-sent.py
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html

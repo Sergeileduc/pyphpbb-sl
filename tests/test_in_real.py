@@ -1,3 +1,4 @@
+import aiohttp
 import asyncio
 import logging
 import os
@@ -46,9 +47,34 @@ async def receive():
         assert message['content'] == token
 
 
+async def delete():
+    """Delete last message from sender."""
+    async with PhpBB(host) as phpbb:
+        await phpbb.login(receiver_name, receiver_password)
+        read_mess_list = await phpbb.fetch_read_messages()
+        filterd_mess_by_sender = [m for m in read_mess_list if m['from_'] == sender_name]  # noqa: E501
+        await phpbb.delete_mp(filterd_mess_by_sender[0])
+
+
 @pytest.mark.asyncio
 async def test_token():
     """Send and receive"""
     await send()
     await asyncio.sleep(3)
     await receive()
+    await asyncio.sleep(2)
+    await delete()
+
+
+@pytest.mark.asyncio
+async def test_misc():
+
+    session = aiohttp.ClientSession()
+
+    """Send and receive"""
+    async with PhpBB(host, session=session) as phpbb:
+        await phpbb.login(sender_name, sender_password)
+        messages = await phpbb.fetch_read_messages()
+        url, payload = await phpbb._make_delete_mp_payload(messages[0])
+
+    await session.close()

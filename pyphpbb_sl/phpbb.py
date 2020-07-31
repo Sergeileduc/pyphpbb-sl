@@ -49,15 +49,6 @@ class PhpBB:
             logger.error(e)
             sys.exit(1)
 
-    def __enter__(self):
-        # here we return the object we can use with `as` in a context manager `with`  # noqa: E501
-        return self
-
-    def __exit__(self, type_, value, traceback):
-        if self.is_logged():
-            self.logout()
-        self.close()
-
     async def __aenter__(self):
         # here we return the object we can use with `as` in a context manager `async with`  # noqa: E501
         return self
@@ -92,7 +83,7 @@ class PhpBB:
         for cookie in cookies:
             if re.search(COOKIE_U_PATTERN, cookie.key):
                 return int(cookie.value)
-        return None
+        return None  # pragma: no cover
 
     def _get_sid(self):
         cookies = self.browser.list_cookies()
@@ -100,7 +91,7 @@ class PhpBB:
             if re.search(COOKIE_SID_PATTERN, cookie.key):
                 sid = cookie.value
                 return sid
-        return None
+        return None  # pragma: no cover
 
     async def login(self, username, password):
         """Log in phpBB forum."""
@@ -192,7 +183,7 @@ class PhpBB:
             pattern_uid = r"address_list\[u\]\[(?P<UID>\d+)\]"
             matches = re.search(pattern_uid, user["name"])
             return matches.group("UID")
-        except (KeyError, TypeError):
+        except (KeyError, TypeError):  # pragma: no cover
             logger.error("Cant't add receiver, probably not a valid pseudonyme")  # noqa: E501
             return None
 
@@ -210,7 +201,7 @@ class PhpBB:
 
         receiverid = PhpBB.parse_resp_find_receiver_id(await resp.text())
 
-        if receiverid is None:
+        if receiverid is None:  # pragma: no cover
             return False
 
         urlrep2, payload2 = await self._make_private_message_payload(urlrep1, receiverid, subject, message)  # noqa: E501
@@ -254,7 +245,7 @@ class PhpBB:
         for message in self.unread_messages:
             if message['from_'] == sender_name:
                 return message
-        return None
+        return None  # pragma: no cover
 
     async def read_private_message(self, message_dict):
         """Read private message."""
@@ -274,6 +265,7 @@ class PhpBB:
         return f, p
 
     async def delete_mp(self, message):
+        """Delete given private message."""
         url, payload = await self._make_delete_mp_payload(message)
         await self.browser.post(url,
                                 # headers=headers,
