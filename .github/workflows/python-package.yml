@@ -45,14 +45,15 @@ jobs:
       run: |
         pip install -r requirements-test.txt
         pip install .
-        pytest --cov-report=xml --cov-report=term --cov=pyphpbb_sl
+        pytest
+        # pytest --cov-report=xml --cov-report=term --cov=pyphpbb_sl
 
-    - name: Upload coverage reports to Codecov
-      env: # Or as an environment variable
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      run: |
-        pip install codecov
-        codecov
+    # - name: Upload coverage reports to Codecov
+    #   env: # Or as an environment variable
+    #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    #   run: |
+    #     pip install codecov
+    #     codecov
 
   clean:
     needs: build
