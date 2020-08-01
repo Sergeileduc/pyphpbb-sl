@@ -26,6 +26,9 @@ To install specific version (git tag), use the following syntax with `@`:
 ### Features
 * Log-in
 * Send Private-Messages
+* Read Private-Messages
+* Delete Private-Messages
+* Fetch forum birthdays
 
 ### Usage
 
@@ -136,7 +139,7 @@ Here are the contents of messages (messages have been marked as read
 {'subject': 'Sent by python. Number 1', 'url': './ucp.php?i=pm&mode=view&f=0&p=11821', 'fromto': 'Bar', 'unread': False, 'content': 'This message was sent by python. Number 1'}
 ```
 
-#### To read *Private Message* from expected user:
+#### To read *PM* from expected user:
 ```python
 import asyncio
 import logging
@@ -232,6 +235,37 @@ async def main():
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
+```
+
+#### Fetch forum members birthdays
+
+```python
+import asyncio
+import logging
+from pyphpbb_sl import PhpBB
+
+# Credentials
+host = "http://myforum.fr/"
+username = "Username"
+password = "Pass1234"
+
+
+async def main():
+    async with PhpBB(host) as phpbb:
+        await phpbb.login(username, password)
+        out = await phpbb.get_birthdays()
+        print(*out, sep='\n')
+
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(main())
+```
+
+Output :
+```shell
+{'name': 'Foo', 'age': 45}
+{'name': 'Bar', 'age': 27}
+{'name': 'FooBar', 'age': 22}
 ```
 
 ### Credits
