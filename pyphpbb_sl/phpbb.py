@@ -272,3 +272,14 @@ class PhpBB:
                                 data=payload)
         logging.info("message deleted : %s", message['url'][-7:])
         return True
+
+    async def get_birthdays(self):
+        """Fetch today's birthdays.
+
+        Return list of dicts [{'name': 'Foo', 'age': 26},]
+        """
+        soup = await self.browser.get_html(self.host)
+        raw = soup.select_one("div.inner > ul.topiclist.forums > li.row > div.birthday-list > p > strong")  # noqa: E501
+        bdays = raw.select("a.username")
+        # regex simply extract digits in next_sibling text, eg. ' (45), ' -> 45
+        return [{'name': b.text, 'age': int(re.search(r"\d+", b.next_sibling)[0])} for b in bdays]  # noqa: E501

@@ -78,3 +78,13 @@ async def test_misc():
         url, payload = await phpbb._make_delete_mp_payload(messages[0])
 
     await session.close()
+
+
+@pytest.mark.asyncio
+async def test_fetch_birthdays():
+    """Fetch birthdays"""
+    async with PhpBB(host) as phpbb:
+        await phpbb.login(receiver_name, receiver_password)
+        out = await phpbb.get_birthdays()
+    print(*out, sep='\n')
+    assert out is not None
