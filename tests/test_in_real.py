@@ -88,3 +88,12 @@ async def test_fetch_birthdays():
         out = await phpbb.get_birthdays()
     print(*out, sep='\n')
     assert out is not None
+
+
+@pytest.mark.asyncio
+async def test_fetch_birthdays():
+    """Fetch rank"""
+    async with PhpBB(host) as phpbb:
+        await phpbb.login(sender_name, sender_password)
+        rank = await phpbb.get_member_rank(receiver_name)
+        assert rank == "Modérateur"

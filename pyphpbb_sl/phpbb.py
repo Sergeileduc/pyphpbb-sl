@@ -16,6 +16,7 @@ from .browser import Browser
 logger = logging.getLogger(__name__)
 
 UCP_URL = 'ucp.php'
+MEMBERS_URL = 'memberlist.php'
 LOGIN_MODE = {'mode': 'login'}
 LOGOUT_MODE = {'mode': 'logout'}
 MESSAGE_COMPOSE = {'i': 'pm', 'mode': 'compose'}
@@ -283,3 +284,10 @@ class PhpBB:
         bdays = raw.select("a.username")
         # regex simply extract digits in next_sibling text, eg. ' (45), ' -> 45
         return [{'name': b.text, 'age': int(re.search(r"\d+", b.next_sibling)[0])} for b in bdays]  # noqa: E501
+
+    async def get_member_rank(self, member_name):
+        """Fetch the forum rank for given member_name."""
+        url = urljoin(self.host, MEMBERS_URL)
+        params = {'mode': 'viewprofile', 'un': member_name}
+        soup = await self.browser.get_html(url, params=params)
+        return soup.find('dd').text

@@ -268,6 +268,32 @@ Output :
 {'name': 'FooBar', 'age': 22}
 ```
 
+#### Fetch rank of a member
+
+```python
+import asyncio
+import logging
+from pyphpbb_sl import PhpBB
+
+# Credentials
+host = "http://myforum.fr/"
+username = "Username"
+password = "Pass1234"
+
+member_name = "Foobar"
+
+
+async def main():
+    async with PhpBB(host) as phpbb:
+        await phpbb.login(username, password)
+        rank = await phpbb.get_member_rank(member_name)
+        print(rank)
+
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(main())
+```
+
 ### Credits
 
 This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
