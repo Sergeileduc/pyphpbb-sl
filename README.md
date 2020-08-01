@@ -128,12 +128,12 @@ Ouput :
 
 ```shell
 Here are your unread messages :
-{'subject': 'Sent by python. Number 2', 'url': './ucp.php?i=pm&mode=view&f=0&p=11822', 'from_': 'Foo', 'unread': True, 'content': None}
-{'subject': 'Sent by python. Number 1', 'url': './ucp.php?i=pm&mode=view&f=0&p=11821', 'from_': 'Bar', 'unread': True, 'content': None}
+{'subject': 'Sent by python. Number 2', 'url': './ucp.php?i=pm&mode=view&f=0&p=11822', 'fromto': 'Foo', 'unread': True, 'content': None}
+{'subject': 'Sent by python. Number 1', 'url': './ucp.php?i=pm&mode=view&f=0&p=11821', 'fromto': 'Bar', 'unread': True, 'content': None}
 
 Here are the contents of messages (messages have been marked as read
-{'subject': 'Sent by python. Number 2', 'url': './ucp.php?i=pm&mode=view&f=0&p=11822', 'from_': 'Foo', 'unread': False, 'content': 'This message was sent by python. Number 2'}
-{'subject': 'Sent by python. Number 1', 'url': './ucp.php?i=pm&mode=view&f=0&p=11821', 'from_': 'Bar', 'unread': False, 'content': 'This message was sent by python. Number 1'}
+{'subject': 'Sent by python. Number 2', 'url': './ucp.php?i=pm&mode=view&f=0&p=11822', 'fromto': 'Foo', 'unread': False, 'content': 'This message was sent by python. Number 2'}
+{'subject': 'Sent by python. Number 1', 'url': './ucp.php?i=pm&mode=view&f=0&p=11821', 'fromto': 'Bar', 'unread': False, 'content': 'This message was sent by python. Number 1'}
 ```
 
 #### To read *Private Message* from expected user:

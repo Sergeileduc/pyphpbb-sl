@@ -76,7 +76,7 @@ async def test_is_logged_fail(not_logged_cookies):
 def message1():
     return {'subject': 'Sent by python.',
             'url': './ucp.php?i=pm&mode=view&f=0&p=11850',
-            'from_': 'Foobar', 'unread': True, 'content': None}
+            'fromto': 'Foobar', 'unread': True, 'content': None}
 
 
 def test__extract_mp_number_id1(message1):
@@ -89,7 +89,7 @@ def test__extract_mp_number_id1(message1):
 def message2():
     return {'subject': 'Sent by python.',
             'url': './ucp.php?i=pm&mode=view&f=-1&p=11852',
-            'from_': 'Foobar', 'unread': True, 'content': None}
+            'fromto': 'Foobar', 'unread': True, 'content': None}
 
 
 def test__extract_mp_number_id2(message2):

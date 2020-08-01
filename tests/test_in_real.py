@@ -52,7 +52,7 @@ async def delete():
     async with PhpBB(host) as phpbb:
         await phpbb.login(receiver_name, receiver_password)
         read_mess_list = await phpbb.fetch_read_messages()
-        filterd_mess_by_sender = [m for m in read_mess_list if m['from_'] == sender_name]  # noqa: E501
+        filterd_mess_by_sender = [m for m in read_mess_list if m['fromto'] == sender_name]  # noqa: E501
         await phpbb.delete_mp(filterd_mess_by_sender[0])
 
 

@@ -220,7 +220,7 @@ class PhpBB:
         sender = soup_item.find("a", class_=["username", "username-coloured"]).text  # noqa: E501
         return {'subject': raw.text,
                 'url': raw["href"],
-                'from_': sender,
+                'fromto': sender,
                 'unread': True,
                 'content': None}
 
@@ -243,7 +243,7 @@ class PhpBB:
         """Find message in unread_messages by sender name. Return first found.
         """
         for message in self.unread_messages:
-            if message['from_'] == sender_name:
+            if message['fromto'] == sender_name:
                 return message
         return None  # pragma: no cover
 
