@@ -91,7 +91,7 @@ async def test_fetch_birthdays():
 
 
 @pytest.mark.asyncio
-async def test_fetch_birthdays():
+async def test_fetch_rank():
     """Fetch rank"""
     async with PhpBB(host) as phpbb:
         await phpbb.login(sender_name, sender_password)
