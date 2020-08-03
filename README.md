@@ -61,8 +61,7 @@ async def main():
     await phpbb.close()
 
 # Run sample
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+asyncio.run(main())
 ```
 
 You can also use a context manager with the keyword `with`(automatic logout and close)
@@ -93,8 +92,7 @@ async def main():
                                          message=message)
 
 # Run sample
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+asyncio.run(main())
 ```
 
 #### To read *Private Message* :
@@ -123,8 +121,7 @@ async def main():
             message = await phpbb.read_private_message(unread_mess)
             print(message)
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+asyncio.run(main())
 ```
 
 Ouput :
@@ -165,8 +162,7 @@ async def main():
             print(message)
 
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+asyncio.run(main())
 ```
 
 #### To validate a token :
@@ -233,8 +229,7 @@ async def main():
             break
 
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+asyncio.run(main())
 ```
 
 #### Fetch forum members birthdays
@@ -257,8 +252,7 @@ async def main():
         print(*out, sep='\n')
 
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+asyncio.run(main())
 ```
 
 Output :
@@ -290,8 +284,7 @@ async def main():
         print(rank)
 
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+asyncio.run(main())
 ```
 
 ### Credits

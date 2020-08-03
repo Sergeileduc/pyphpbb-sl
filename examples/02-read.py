@@ -39,5 +39,4 @@ async def main():
             message = await phpbb.read_private_message(unread_mess)
             print(message)
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+asyncio.run(main())

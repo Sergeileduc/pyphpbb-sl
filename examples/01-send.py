@@ -40,8 +40,7 @@ async def main():
                                          subject=subject,
                                          message=message)
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+asyncio.run(main())
 
 # async def main():
 #     phpbb = PhpBB(host)
@@ -53,5 +52,4 @@ loop.run_until_complete(main())
 #     await phpbb.logout()
 #     await phpbb.close()
 
-# loop = asyncio.get_event_loop()
-# loop.run_until_complete(main())
+# asyncio.run(main())

@@ -39,5 +39,4 @@ async def main():
         for m in filterd_mess_by_sender:
             await phpbb.delete_mp(m)
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+asyncio.run(main())

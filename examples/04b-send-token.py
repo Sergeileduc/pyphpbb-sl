@@ -44,5 +44,4 @@ async def main():
                                          subject=subject,
                                          message=message)
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+asyncio.run(main())

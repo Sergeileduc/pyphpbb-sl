@@ -61,5 +61,4 @@ async def main():
     await clean(account_b, password_b, account_a)
 
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+asyncio.run(main())

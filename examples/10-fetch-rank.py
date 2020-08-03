@@ -8,7 +8,6 @@ import logging
 import os
 
 from dotenv import load_dotenv
-from urllib.parse import urljoin
 
 from pyphpbb_sl import PhpBB
 
@@ -36,5 +35,4 @@ async def main():
         rank = await phpbb.get_member_rank(querry_user)
         print(rank)
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+asyncio.run(main())

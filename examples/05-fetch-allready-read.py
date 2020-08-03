@@ -37,5 +37,4 @@ async def main():
         filterd_mess_by_sender = [m for m in unread_mess_list if m['fromto'] == sender]  # noqa: E501
         print(*filterd_mess_by_sender, sep='\n')
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+asyncio.run(main())
