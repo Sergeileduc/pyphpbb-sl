@@ -19,7 +19,9 @@ UCP_URL = 'ucp.php'
 MEMBERS_URL = 'memberlist.php'
 LOGIN_MODE = {'mode': 'login'}
 LOGOUT_MODE = {'mode': 'logout'}
+VIEW_PROFILE_MODE = {'mode': 'viewprofile'}
 MESSAGE_COMPOSE = {'i': 'pm', 'mode': 'compose'}
+MESSAGE_COMPOSE_DELETE = dict(MESSAGE_COMPOSE, **{'action': 'delete'})
 INBOX = {'i': 'pm', 'folder': 'inbox'}
 SENTBOX = {'i': 'pm', 'folder': 'sentbox'}
 SUBMIT = 'Envoyer'
@@ -117,7 +119,7 @@ class PhpBB:
             # u_logout = Login(self.browser.session, self.host)
             # u_logout.send_logout()
             forum_ucp = urljoin(self.host, UCP_URL)
-            params = {'mode': 'logout', 'sid': self._get_sid()}
+            params = dict(LOGOUT_MODE, sid=self._get_sid())
             r = await self.browser.post(forum_ucp,
                                         # headers=headers,
                                         params=params)
@@ -161,8 +163,7 @@ class PhpBB:
 
     async def _make_delete_mp_payload(self, message):  # noqa: E501
         f, p = PhpBB._extract_mp_number_id(message)
-        params = {'i': 'pm', 'mode': 'compose', 'action': 'delete',
-                  'f': f, 'p': p}
+        params = dict(MESSAGE_COMPOSE_DELETE, f=f, p=p)
         url = urljoin(self.host, UCP_URL)
         form = await self.browser.get_form(url, "confirm", params=params)
         form['values']['confirm'] = "Oui"
@@ -288,6 +289,6 @@ class PhpBB:
     async def get_member_rank(self, member_name):
         """Fetch the forum rank for given member_name."""
         url = urljoin(self.host, MEMBERS_URL)
-        params = {'mode': 'viewprofile', 'un': member_name}
+        params = dict(VIEW_PROFILE_MODE, un=member_name)
         soup = await self.browser.get_html(url, params=params)
         return soup.find('dd').text
