@@ -4,7 +4,7 @@
 
 # pyphpbb-sl
 
-Interract with phpbb forums.
+Interact with phpbb forums.
 
 
 * Free software: MIT license
