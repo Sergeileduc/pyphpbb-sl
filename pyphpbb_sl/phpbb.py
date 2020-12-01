@@ -28,6 +28,7 @@ SUBMIT = 'Envoyer'
 COOKIE_U_PATTERN = r'phpbb\d?_.*_u'  # new cookie regex
 COOKIE_SID_PATTERN = r'phpbb\d?_.*_sid'  # new cookie regex
 PM_ID_PATTERN = r"f=(?P<F>-?\d+)&p=(?P<P>\d+)"
+USER_ID_PATTERN = r"&u=(?P<UID>\d+)"
 
 
 class PhpBB:
@@ -292,3 +293,41 @@ class PhpBB:
         params = dict(VIEW_PROFILE_MODE, un=member_name)
         soup = await self.browser.get_html(url, params=params)
         return soup.find('dd').text
+    
+    async def get_member_uid(self, member_name):
+        """Fetch the user id number for given member_name."""
+        try:
+            url = urljoin(self.host, MEMBERS_URL)
+            params = dict(VIEW_PROFILE_MODE, un=member_name)
+            soup = await self.browser.get_html(url, params=params)
+            canonical_url = soup.find('link', rel='canonical')['href']
+            match = re.search(USER_ID_PATTERN, canonical_url)
+            uid = int(match.group("UID"))
+            return uid
+        except Exception as e:
+            print(e)
+            return 0
+    
+    async def get_member_infos(self, member_name):
+        """Fetch the user id number AND rank for given member_name
+
+        Args:
+            member_name (str): forum member name
+
+        Returns:
+            (int, str): (user_id, rank)
+        """
+        uid = 0
+        rank = ''
+        try:
+            url = urljoin(self.host, MEMBERS_URL)
+            params = dict(VIEW_PROFILE_MODE, un=member_name)
+            soup = await self.browser.get_html(url, params=params)
+            canonical_url = soup.find('link', rel='canonical')['href']
+            match = re.search(USER_ID_PATTERN, canonical_url)
+            uid = int(match.group("UID"))
+            rank = soup.find('dd').text
+        except Exception as e:
+            logger.error(e)
+        return uid, rank
+   

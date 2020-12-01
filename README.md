@@ -287,6 +287,30 @@ async def main():
 asyncio.run(main())
 ```
 
+## Fetch infos (uid and rank) of a member
+
+```python
+import asyncio
+import logging
+from pyphpbb_sl import PhpBB
+
+# Credentials
+host = "http://myforum.fr/"
+username = "Username"
+password = "Pass1234"
+
+member_name = "Foobar"
+
+
+async def main():
+    async with PhpBB(host) as phpbb:
+        uid, rank = await phpbb.get_member_infos(querry_user)
+        print(uid)
+        print(rank)
+
+asyncio.run(main())
+```
+
 ### Credits
 
 This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.

@@ -97,3 +97,13 @@ async def test_fetch_rank():
         await phpbb.login(sender_name, sender_password)
         rank = await phpbb.get_member_rank(receiver_name)
         assert rank == "Modérateur"
+        
+
+@pytest.mark.asyncio
+async def test_fetch_info():
+    """Fetch rank"""
+    async with PhpBB(host) as phpbb:
+        await phpbb.login(sender_name, sender_password)
+        uid, rank = await phpbb.get_member_infos(receiver_name)
+        assert rank == "Modérateur"
+        assert uid == 43533
