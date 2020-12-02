@@ -283,9 +283,11 @@ class PhpBB:
         """
         soup = await self.browser.get_html(self.host)
         raw = soup.select_one("div.inner > ul.topiclist.forums > li.row > div.birthday-list > p > strong")  # noqa: E501
-        bdays = raw.select("a.username")
-        # regex simply extract digits in next_sibling text, eg. ' (45), ' -> 45
-        return [{'name': b.text, 'age': int(re.search(r"\d+", b.next_sibling)[0])} for b in bdays]  # noqa: E501
+        if raw:
+            bdays = raw.select("a.username")
+            # regex simply extract digits in next_sibling text, eg. ' (45), ' -> 45
+            return [{'name': b.text, 'age': int(re.search(r"\d+", b.next_sibling)[0])} for b in bdays]  # noqa: E501
+        return []
 
     async def get_member_rank(self, member_name):
         """Fetch the forum rank for given member_name."""
