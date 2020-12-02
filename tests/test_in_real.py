@@ -75,7 +75,7 @@ async def test_misc():
     async with PhpBB(host, session=session) as phpbb:
         await phpbb.login(sender_name, sender_password)
         messages = await phpbb.fetch_read_messages()
-        url, payload = await phpbb._make_delete_mp_payload(messages[0])
+        url, payload = await phpbb._make_delete_mp_payload(messages[0])  # #pylint: disable=unused-variable  # noqa: E501
 
     await session.close()
 
@@ -97,7 +97,7 @@ async def test_fetch_rank():
         await phpbb.login(sender_name, sender_password)
         rank = await phpbb.get_member_rank(receiver_name)
         assert rank == "Modérateur"
-        
+
 
 @pytest.mark.asyncio
 async def test_fetch_info():

@@ -293,7 +293,7 @@ class PhpBB:
         params = dict(VIEW_PROFILE_MODE, un=member_name)
         soup = await self.browser.get_html(url, params=params)
         return soup.find('dd').text
-    
+
     async def get_member_uid(self, member_name):
         """Fetch the user id number for given member_name."""
         try:
@@ -307,7 +307,7 @@ class PhpBB:
         except Exception as e:
             print(e)
             return 0
-    
+
     async def get_member_infos(self, member_name):
         """Fetch the user id number AND rank for given member_name
 
@@ -330,4 +330,3 @@ class PhpBB:
         except Exception as e:
             logger.error(e)
         return uid, rank
-   
