@@ -4,6 +4,7 @@
 
 from collections import namedtuple
 
+from bs4 import BeautifulSoup
 import pytest
 
 from pyphpbb_sl import PhpBB
@@ -96,3 +97,48 @@ def test__extract_mp_number_id2(message2):
     f, p = PhpBB._extract_mp_number_id(message2)
     assert f == -1
     assert p == 11852
+
+
+html = """
+<strong>
+ <a class="username" href="./memberlist.php?mode=viewprofile&amp;u=1059">
+  Superman
+ </a>
+ ,
+ <a class="username" href="./memberlist.php?mode=viewprofile&amp;u=22820">
+  Wolverine
+ </a>
+ ,
+ <a class="username" href="./memberlist.php?mode=viewprofile&amp;u=6870">
+  Wonder-Woman
+ </a>
+ (27),
+ <a class="username" href="./memberlist.php?mode=viewprofile&amp;u=30914">
+  Spider-Man
+ </a>
+ (27),
+ <a class="username" href="./memberlist.php?mode=viewprofile&amp;u=23851">
+  Tony Stark
+ </a>
+ (35)
+ <a class="username" href="./memberlist.php?mode=viewprofile&amp;u=23852">
+  Batman
+ </a>
+</strong>
+"""
+
+birthdays = BeautifulSoup(html, 'html.parser').select("a.username")
+
+testdata = [
+    (birthdays[0], 0),
+    (birthdays[1], 0),
+    (birthdays[2], 27),
+    (birthdays[3], 27),
+    (birthdays[4], 35),
+    (birthdays[5], 0),  
+]
+
+@pytest.mark.parametrize("tag,expected", testdata)
+def test__parse_age(tag, expected):
+    age = PhpBB._parse_age(tag)
+    assert age == expected

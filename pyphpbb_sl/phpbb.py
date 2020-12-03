@@ -266,6 +266,26 @@ class PhpBB:
         f = int(match.group("F"))
         p = int(match.group("P"))
         return f, p
+    
+    @staticmethod
+    def _parse_age(tag):
+        """Parse a birthday tag and find the age
+
+        Args:
+            tag (bs4.element.Tag): Beautiful Soup Tag for a birthday
+
+        Returns:
+            int: age, if found, or 0 if not found
+        """
+        age = 0
+        try:
+            text = tag.next_sibling
+            if not text.startswith(','):
+                # regex simply extract digits in next_sibling text, eg. ' (45), ' -> 45
+                age = int(re.search(r"\d+", text)[0])
+        except Exception:
+            pass
+        return age
 
     async def delete_mp(self, message):
         """Delete given private message."""
@@ -280,13 +300,14 @@ class PhpBB:
         """Fetch today's birthdays.
 
         Return list of dicts [{'name': 'Foo', 'age': 26},]
+        age is set to '0' if not found.
         """
         soup = await self.browser.get_html(self.host)
         raw = soup.select_one("div.inner > ul.topiclist.forums > li.row > div.birthday-list > p > strong")  # noqa: E501
+        print(raw.prettify())
         if raw:
             bdays = raw.select("a.username")
-            # regex simply extract digits in next_sibling text, eg. ' (45), ' -> 45
-            return [{'name': b.text, 'age': int(re.search(r"\d+", b.next_sibling)[0])} for b in bdays]  # noqa: E501
+            return [{'name': b.text, 'age': PhpBB._parse_age(b)} for b in bdays]
         return []
 
     async def get_member_rank(self, member_name):
