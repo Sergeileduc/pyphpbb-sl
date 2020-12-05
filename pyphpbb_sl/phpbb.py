@@ -304,7 +304,6 @@ class PhpBB:
         """
         soup = await self.browser.get_html(self.host)
         raw = soup.select_one("div.inner > ul.topiclist.forums > li.row > div.birthday-list > p > strong")  # noqa: E501
-        print(raw.prettify())
         if raw:
             bdays = raw.select("a.username")
             return [{'name': b.text, 'age': PhpBB._parse_age(b)} for b in bdays]
