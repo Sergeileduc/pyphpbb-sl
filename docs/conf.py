@@ -80,7 +80,8 @@ language = None
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+# pygments_style = 'sphinx'
+pygments_style = 'paraiso-dark'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
@@ -110,7 +111,7 @@ html_theme_options = {
     'font_family': "'Roboto', Georgia, sans",
     'head_font_family': "'Roboto', Georgia, serif",
     'code_font_family': "'Roboto Mono', 'Consolas', monospace",
-    # 'pre_bg': '#433e56'
+    'pre_bg': '#433e56'
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
