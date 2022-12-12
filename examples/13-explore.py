@@ -32,23 +32,26 @@ logging.debug("password %s", password)
 def get_sub_forums(html):
     sub_forums = html.select("a.forumtitle")
     if sub_forums:
-        return [{'name': s.text,'url': s['href']} for s in sub_forums]
+        return [{'name': s.text, 'url': s['href']} for s in sub_forums]
     return []
 
+
 def get_nb_topics(html):
-        """Get number of topics in sub-forum."""
-        try:
-            raw = html.select('div.pagination')[0].text
-            n = re.search(r"(?P<nb_topics>\d+?) sujet(s)?", raw).group('nb_topics')
-            return int(n)
-        except AttributeError:
-            return 0
+    """Get number of topics in sub-forum."""
+    try:
+        raw = html.select('div.pagination')[0].text
+        n = re.search(r"(?P<nb_topics>\d+?) sujet(s)?", raw).group('nb_topics')
+        return int(n)
+    except AttributeError:
+        return 0
+
 
 def get_topics(html):
     topics = html.select("a.topictitle")
     if topics:
-        return [{'name': t.text,'url': t['href']} for t in topics]
+        return [{'name': t.text, 'url': t['href']} for t in topics]
     return []
+
 
 async def get_all_topics(phpbb, html, url):
     # First iteration, we allready have the html from the while loop
@@ -65,9 +68,9 @@ async def get_all_topics(phpbb, html, url):
         new_topics = get_topics(html)
         topics += new_topics
         n -= 40
-        start +=40
+        start += 40
     return topics
-        
+
 
 def print_res_numbers(res_list, start_index=0):
     if res_list:
@@ -107,24 +110,24 @@ async def main():
         print_res_letters(sub_forums)
         if not active_topics_flag:
             print(f"*****{nb_topics} Topics**************")
-            print_res_numbers(topics[topics_page*10:(topics_page+1)*10], 1)
-        
+            print_res_numbers(topics[topics_page*10:(topics_page+1)*10], 1)  # noqa: E226, E501
+
         if nb_topics > 10:
             choice = input("Entrez un choix :\n"
-                        "- une lettre/un nombre pour naviguer\n"
-                        "- 'ù' pour remonter dans le dossier précédent\n"
-                        "- '!' pour la prochaine page de topics (10 suivants)\n"
-                        "- ':' pour la page précédente de topics (10 d'avant)\n"
-                        "- 'exit' pour sortir.\n")
+                           "- une lettre/un nombre pour naviguer\n"
+                           "- 'ù' pour remonter dans le dossier précédent\n"
+                           "- '!' pour la prochaine page de topics (10 suivants)\n"
+                           "- ':' pour la page précédente de topics (10 d'avant)\n"
+                           "- 'exit' pour sortir.\n")
         else:
             choice = input("Entrez un choix :\n"
                            "- un nombre pour naviguer dans un dossier\n"
                            "- 'u' pour remonter dans le dossier précédent\n"
                            "- 'exit' pour sortir.\n")
-        
+
         if choice == "exit":
             break
-        
+
         while choice in ['!', ':']:
             print(f"choice : {choice}")
             print(f"topics_page : {topics_page}")
@@ -133,26 +136,25 @@ async def main():
                 topics_page += 1
             if choice == ':' and topics_page > 0:
                 topics_page -= 1
-            print_res_numbers(topics[topics_page*10:(topics_page+1)*10], 1)
+            print_res_numbers(topics[topics_page*10:(topics_page+1)*10], 1)  # noqa: E226, E501
             choice = input("Entrez un choix :\n"
-                    "- une lettre/un nombre pour naviguer\n"
-                    "- 'ù' pour remonter dans le dossier précédent\n"
-                    "- '!' pour la prochaine page de topics (10 suivants)\n"
-                    "- ':' pour la page précédente de topics (10 d'avant)\n"
-                    "- 'exit' pour sortir.\n")
-
+                           "- une lettre/un nombre pour naviguer\n"
+                           "- 'ù' pour remonter dans le dossier précédent\n"
+                           "- '!' pour la prochaine page de topics (10 suivants)\n"
+                           "- ':' pour la page précédente de topics (10 d'avant)\n"
+                           "- 'exit' pour sortir.\n")
 
         if choice.isdigit():
             choice = int(choice)
             print("OK, here you are :")
-            t = topics[topics_page*10+choice-1]
+            t = topics[topics_page*10 + choice-1]  # noqa: E226
             url = urljoin(host, t['url'])
             print(f"{t['name']}\t{url}")
             break
 
         next_url = sub_forums[ascii_uppercase.index(choice.upper())].get('url')
         print(next_url)
-    
+
     await phpbb.logout()
     await phpbb.close()
 
