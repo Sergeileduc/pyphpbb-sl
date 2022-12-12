@@ -22,7 +22,8 @@ class Browser:
             self._ownsession = False
         else:
             # self.session = aiohttp.ClientSession(loop=loop)
-            self.session = aiohttp.ClientSession(loop=loop, headers={"Connection": "close"})
+            self.session = aiohttp.ClientSession(loop=loop,
+                                                 headers={"Connection": "close"})
             self._ownsession = True
 
     async def close(self):

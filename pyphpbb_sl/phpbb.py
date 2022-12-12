@@ -266,7 +266,7 @@ class PhpBB:
         f = int(match.group("F"))
         p = int(match.group("P"))
         return f, p
-    
+
     @staticmethod
     def _parse_age(tag):
         """Parse a birthday tag and find the age

@@ -7,3 +7,5 @@ watchdog
 flake8
 coverage
 Sphinx
+flake8
+invoke

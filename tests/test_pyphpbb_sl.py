@@ -135,10 +135,11 @@ testdata = [
     (birthdays[2], 27),
     (birthdays[3], 27),
     (birthdays[4], 35),
-    (birthdays[5], 0),  
+    (birthdays[5], 0),
 ]
 
+
 @pytest.mark.parametrize("tag,expected", testdata)
-def test__parse_age(tag, expected):
+def test_parse_age(tag, expected):
     age = PhpBB._parse_age(tag)
     assert age == expected
