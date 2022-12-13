@@ -107,3 +107,12 @@ async def test_fetch_info():
         uid, rank = await phpbb.get_member_infos(receiver_name)
         assert rank == "Modérateur"
         assert uid == 43533
+
+
+@pytest.mark.asyncio
+async def test_get_member_uid():
+    """Send message with token to receiver."""
+    async with PhpBB(host) as phpbb:
+        await phpbb.login(sender_name, sender_password)
+        member_id = await phpbb.get_member_uid(receiver_name)
+        assert member_id == 43533

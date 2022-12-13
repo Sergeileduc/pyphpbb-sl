@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess
+import webbrowser
 from itertools import chain
 from pathlib import Path
 from platform import uname
@@ -95,3 +96,16 @@ def clean(c):
 def test(c):
     """Run tests with pytest."""
     c.run("pytest tests/")
+
+
+@task
+def coverage(c):
+    """Run unit-tests using pytest, with coverage reporting."""
+    # use the browser defined in varenv $BROWSER
+    # in WSL, if not set, example :  export BROWSER='/mnt/c/Program Files/Google/Chrome/Application/chrome.exe'
+    path = get_index_path()
+    # c.run('coverage run --source=tests -m pytest')
+    # c.run('coverage report -m')
+    # c.run('coverage html')
+    c.run('pytest --cov . --cov-report html')
+    webbrowser.open(path.as_uri())
