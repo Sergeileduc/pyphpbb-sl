@@ -102,7 +102,7 @@ def test(c):
 def coverage(c):
     """Run unit-tests using pytest, with coverage reporting."""
     # use the browser defined in varenv $BROWSER
-    # in WSL, if not set, example :  export BROWSER='/mnt/c/Program Files/Google/Chrome/Application/chrome.exe'
+    # in WSL, if not set, example :  export BROWSER='/mnt/c/Program Files/Google/Chrome/Application/chrome.exe'  # noqa: E501
     path = get_index_path()
     # c.run('coverage run --source=tests -m pytest')
     # c.run('coverage report -m')
