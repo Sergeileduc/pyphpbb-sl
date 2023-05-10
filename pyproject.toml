@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyphpbb_sl"
+authors = [{name = "Sergeileduc", email = "sergei.leduc@gmail.com"},]
+maintainers = [{name = "Sergeileduc"}]
+description = "Interract with phpbb forum."
+dynamic = ["readme", "version"]
+license = {file = "LICENSE"}
+requires-python = ">=3.8"
+keywords = ["forum", "phpbb"]
+classifiers = [
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Development Status :: 3 - Alpha",
+]
+
+dependencies = [
+    "aiohttp",
+    "bs4",
+]
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-asyncio", "pytest-runner",
+        "asynctest", "python-dotenv", "pytest-cov"]
+doc = ["sphinx"]
+dev = ["flake8", "invoke", "build", "coverage", "bump2version"]
+
+[project.urls]
+"Homepage" = "https://github.com/Sergeileduc/pyphpbb-sl"
+"Source" = "https://github.com/Sergeileduc/pyphpbb-sl"
+"Bug Tracker" = "https://github.com/Sergeileduc/pyphpbb-sl/issues"
+"Documentation" = "https://dpytest.readthedocs.io/"
+
+[tool.setuptools]
+packages = ["pyphpbb_sl"]
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.md", "HISTORY.md"], content-type = "text/markdown"}
+version = {attr = "pyphpbb_sl.__version__"}
