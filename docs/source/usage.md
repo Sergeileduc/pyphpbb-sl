@@ -1,8 +1,8 @@
-#  Usage
+# Usage
 
 To use pyphpbb-sl in a project::
 
-## To send *Private Message* :
+## To send *Private Message*
 
 ```python
 import asyncio
@@ -65,7 +65,8 @@ async def main():
 asyncio.run(main())
 ```
 
-## To read *Private Message* :
+## To read *Private Message*
+
 ```python
 import asyncio
 import logging
@@ -98,15 +99,16 @@ Ouput :
 
 ```shell
 Here are your unread messages :
-{'subject': 'Sent by python. Number 2', 'url': './ucp.php?i=pm&mode=view&f=0&p=11822', 'fromto': 'Foo', 'unread': True, 'content': None}
-{'subject': 'Sent by python. Number 1', 'url': './ucp.php?i=pm&mode=view&f=0&p=11821', 'fromto': 'Bar', 'unread': True, 'content': None}
+Message(subject='Sent by python. Number 2', url='./ucp.php?i=pm&mode=view&f=0&p=14249', fromto='DC-Trad', content=None, unread=True)
+Message(subject='Sent by python. Number 1', url='./ucp.php?i=pm&mode=view&f=0&p=14248', fromto='DC-Trad', content=None, unread=True)
 
-Here are the contents of messages (messages have been marked as read
-{'subject': 'Sent by python. Number 2', 'url': './ucp.php?i=pm&mode=view&f=0&p=11822', 'fromto': 'Foo', 'unread': False, 'content': 'This message was sent by python. Number 2'}
-{'subject': 'Sent by python. Number 1', 'url': './ucp.php?i=pm&mode=view&f=0&p=11821', 'fromto': 'Bar', 'unread': False, 'content': 'This message was sent by python. Number 1'}
+Here are the contents of messages (messages have been marked as read) :
+Message(subject='Sent by python. Number 2', url='./ucp.php?i=pm&mode=view&f=0&p=14249', fromto='DC-Trad', content='This message was sent by python Number 2.', unread=False)
+Message(subject='Sent by python. Number 1', url='./ucp.php?i=pm&mode=view&f=0&p=14248', fromto='DC-Trad', content='This message was sent by python Number 1.', unread=False)
 ```
 
-## To read *PM* from expected user:
+## To read *PM* from expected user
+
 ```python
 import asyncio
 import logging
@@ -135,9 +137,10 @@ async def main():
 asyncio.run(main())
 ```
 
-## To validate a token :
+## To validate a token
 
 In next code, we will :
+
 - generate a token
 - *not in code* : give the token to your user (by Discord, mail, etc...)
 - fetch our inbox every 30 seconds in a loop (with 5 minutes timeout)
@@ -226,6 +229,7 @@ asyncio.run(main())
 ```
 
 Output :
+
 ```shell
 {'name': 'Foo', 'age': 45}
 {'name': 'Bar', 'age': 27}

@@ -1,4 +1,8 @@
-.. mdinclude:: ../README.md
+Readme File
+-----------
+
+.. include:: ../../README.md
+   :parser: myst_parser.sphinx_
 
 Contents
 --------
@@ -9,5 +13,6 @@ Contents
 
    installation
    usage
-   contributing
    history
+   contributing
+   

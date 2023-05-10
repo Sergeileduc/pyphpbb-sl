@@ -96,6 +96,15 @@ def cleanbuild(c):
         shutil.rmtree(b)
 
 
+@task
+def cleandoc(c):
+    """Clean documentation files."""
+    p = Path('.').resolve() / "docs" / "build"
+    print(p)
+    with contextlib.suppress(FileNotFoundError):
+        shutil.rmtree(p)
+
+
 @task(cleantest, cleanbuild)
 def clean(c):
     """Equivalent to both cleanbuild and cleantest..."""
@@ -118,6 +127,13 @@ def coverage(c):
     # c.run('coverage report -m')
     # c.run('coverage html')
     c.run('pytest --cov . --cov-report html')
+    webbrowser.open(path.as_uri())
+
+
+@task(cleandoc)
+def doc(c):
+    c.run("pushd docs && make html && popd")
+    path = Path('.').resolve() / "docs" / "build" / "html" / "index.html"
     webbrowser.open(path.as_uri())
 
 

@@ -1,0 +1,33 @@
+name: Sphinx docs to gh-pages
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# workflow_dispatch:        # Un comment line if you also want to trigger action manually
+
+jobs:
+  sphinx_docs_to_gh-pages:
+    runs-on: ubuntu-latest
+    name: Sphinx docs to gh-pages
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Installing the Documentation requirements
+        run: |
+          pip3 install .[docs]
+      - name: Running the Sphinx to gh-pages Action
+        uses: uibcdf/action-sphinx-docs-to-gh-pages@v1.1.0
+        with:
+          branch: master
+          dir_docs: docs/source
+          sphinxapiopts: "--separate -o . ../"
+          sphinxapiexclude: "../*setup* ../*.ipynb"
+          sphinxopts: ""
