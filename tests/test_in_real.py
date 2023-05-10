@@ -39,12 +39,11 @@ async def receive():
     async with PhpBB(host) as phpbb:
         await phpbb.login(receiver_name, receiver_password)
         await phpbb.fetch_unread_messages()
-        message_to_read = phpbb.find_expected_message_by_user(sender_name)
-        if message_to_read:
+        if message_to_read := phpbb.find_expected_message_by_user(sender_name):
             message = await phpbb.read_private_message(message_to_read)
             print(message)
 
-        assert message['content'] == token
+        assert message.content == token
 
 
 async def delete():
@@ -52,7 +51,7 @@ async def delete():
     async with PhpBB(host) as phpbb:
         await phpbb.login(receiver_name, receiver_password)
         read_mess_list = await phpbb.fetch_read_messages()
-        filterd_mess_by_sender = [m for m in read_mess_list if m['fromto'] == sender_name]  # noqa: E501
+        filterd_mess_by_sender = [m for m in read_mess_list if m.fromto == sender_name]  # noqa: E501
         await phpbb.delete_mp(filterd_mess_by_sender[0])
 
 
@@ -75,7 +74,7 @@ async def test_misc():
     async with PhpBB(host, session=session) as phpbb:
         await phpbb.login(sender_name, sender_password)
         messages = await phpbb.fetch_read_messages()
-        url, payload = await phpbb._make_delete_mp_payload(messages[0])  # #pylint: disable=unused-variable  # noqa: E501
+        _, _ = await phpbb._make_delete_mp_payload(messages[0])
 
     await session.close()
 

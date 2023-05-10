@@ -5,6 +5,6 @@ __email__ = 'sergei.leduc@gmail.com'
 __version__ = '0.11.1'
 
 
-from .phpbb import PhpBB
+from .phpbb import PhpBB, Message
 
-__all__ = ["PhpBB"]
+__all__ = ["PhpBB", "Message"]

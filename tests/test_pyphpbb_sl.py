@@ -7,7 +7,7 @@ from collections import namedtuple
 from bs4 import BeautifulSoup
 import pytest
 
-from pyphpbb_sl import PhpBB
+from pyphpbb_sl import PhpBB, Message
 
 
 @pytest.fixture
@@ -74,23 +74,23 @@ async def test_is_logged_fail(not_logged_cookies):
 
 
 @pytest.fixture
-def message1():
-    return {'subject': 'Sent by python.',
-            'url': './ucp.php?i=pm&mode=view&f=0&p=11850',
-            'fromto': 'Foobar', 'unread': True, 'content': None}
+def message1() -> Message:
+    return Message(subject='Sent by python.',
+                   url='./ucp.php?i=pm&mode=view&f=0&p=11850',
+                   fromto='Foobar', unread=True, content=None)
 
 
-def test__extract_mp_number_id1(message1):
+def test__extract_mp_number_id1(message1: Message):
     f, p = PhpBB._extract_mp_number_id(message1)
     assert f == 0
     assert p == 11850
 
 
 @pytest.fixture
-def message2():
-    return {'subject': 'Sent by python.',
-            'url': './ucp.php?i=pm&mode=view&f=-1&p=11852',
-            'fromto': 'Foobar', 'unread': True, 'content': None}
+def message2() -> Message:
+    return Message(subject='Sent by python.',
+                   url='./ucp.php?i=pm&mode=view&f=-1&p=11852',
+                   fromto='Foobar', unread=True, content=None)
 
 
 def test__extract_mp_number_id2(message2):

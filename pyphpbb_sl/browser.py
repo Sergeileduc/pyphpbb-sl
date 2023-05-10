@@ -50,9 +50,7 @@ class Browser:
         # headers['User-Agent'] = self.user_agent
         try:
             r = await self.session.get(url, params=params)
-            soup = Browser.html2soup(await r.text())
-            # print(soup)
-            return soup
+            return Browser.html2soup(await r.text())
         except HTTPError as e:  # pragma: no cover
             print("HTTP Error")
             print(e)
@@ -71,19 +69,19 @@ class Browser:
     def _get_form_values(soup):
         try:
             inputs = soup.find_all("input")
-            values = {}
-            for inp in inputs:
-                if (inp.get("type") == "submit"
-                        or not inp.get("name")
-                        or not inp.get("value")):
-                    continue
-                values[inp["name"]] = inp["value"]
+            values = {
+                inp["name"]: inp["value"]
+                for inp in inputs
+                if inp.get("type") != "submit"
+                and inp.get("name")
+                and inp.get("value")
+            }
             return {"values": values, "action": soup["action"]}
         except AttributeError as e:  # pragma: no cover
-            print("Attribute Error : " + str(e))
+            print(f"Attribute Error : {str(e)}")
             return None
         except KeyError as e:  # pragma: no cover
-            print("Key Error code : " + str(e))
+            print(f"Key Error code : {str(e)}")
             return None
 
     async def select_tag(self, url, tag):

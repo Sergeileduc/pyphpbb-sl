@@ -6,11 +6,11 @@
 
 Interact with phpbb forums.
 
-
 * Free software: MIT license
-* Documentation: https://pyphpbb-sl.readthedocs.io/
+* Documentation: <https://pyphpbb-sl.readthedocs.io/>
 
 ## Installation
+
 ```shell
 pip install git+https://github.com/Sergeileduc/pyphpbb-sl.git
 ```
@@ -24,6 +24,7 @@ To install specific version (git tag), use the following syntax with `@`:
 `pip install git+https://github.com/Sergeileduc/pyphpbb-sl.git@v0.12.0`
 
 ### Features
+
 * Log-in
 * Send Private-Messages
 * Read Private-Messages
@@ -32,7 +33,7 @@ To install specific version (git tag), use the following syntax with `@`:
 
 ### Usage
 
-#### To send *Private Message* :
+#### To send *Private Message*
 
 ```python
 import asyncio
@@ -95,7 +96,8 @@ async def main():
 asyncio.run(main())
 ```
 
-#### To read *Private Message* :
+#### To read *Private Message*
+
 ```python
 import asyncio
 import logging
@@ -128,15 +130,16 @@ Ouput :
 
 ```shell
 Here are your unread messages :
-{'subject': 'Sent by python. Number 2', 'url': './ucp.php?i=pm&mode=view&f=0&p=11822', 'fromto': 'Foo', 'unread': True, 'content': None}
-{'subject': 'Sent by python. Number 1', 'url': './ucp.php?i=pm&mode=view&f=0&p=11821', 'fromto': 'Bar', 'unread': True, 'content': None}
+Message(subject='Sent by python. Number 2', url='./ucp.php?i=pm&mode=view&f=0&p=14249', fromto='DC-Trad', content=None, unread=True)
+Message(subject='Sent by python. Number 1', url='./ucp.php?i=pm&mode=view&f=0&p=14248', fromto='DC-Trad', content=None, unread=True)
 
-Here are the contents of messages (messages have been marked as read
-{'subject': 'Sent by python. Number 2', 'url': './ucp.php?i=pm&mode=view&f=0&p=11822', 'fromto': 'Foo', 'unread': False, 'content': 'This message was sent by python. Number 2'}
-{'subject': 'Sent by python. Number 1', 'url': './ucp.php?i=pm&mode=view&f=0&p=11821', 'fromto': 'Bar', 'unread': False, 'content': 'This message was sent by python. Number 1'}
+Here are the contents of messages (messages have been marked as read) :
+Message(subject='Sent by python. Number 2', url='./ucp.php?i=pm&mode=view&f=0&p=14249', fromto='DC-Trad', content='This message was sent by python Number 2.', unread=False)
+Message(subject='Sent by python. Number 1', url='./ucp.php?i=pm&mode=view&f=0&p=14248', fromto='DC-Trad', content='This message was sent by python Number 1.', unread=False)
 ```
 
-#### To read *PM* from expected user:
+#### To read *PM* from expected user
+
 ```python
 import asyncio
 import logging
@@ -165,14 +168,15 @@ async def main():
 asyncio.run(main())
 ```
 
-#### To validate a token :
+#### To validate a token
 
 In next code, we will :
-- generate a token
-- *not in code* : give the token to your user (by Discord, mail, etc...)
-- fetch our inbox every 30 seconds in a loop (with 5 minutes timeout)
-- read message from our expected user
-- compare token and message content to validate or not
+
+* generate a token
+* *not in code* : give the token to your user (by Discord, mail, etc...)
+* fetch our inbox every 30 seconds in a loop (with 5 minutes timeout)
+* read message from our expected user
+* compare token and message content to validate or not
 
 ```python
 import asyncio
@@ -206,7 +210,7 @@ async def try_to_verify(username):
         message_to_read = phpbb.find_expected_message_by_user(expect_message_from_username)
         if message_to_read:
             message = await phpbb.read_private_message(message_to_read)
-            if message['content'] == token:
+            if message.content == token:
                 print("Valid token ! GOOD")
                 return True
             else:
@@ -256,6 +260,7 @@ asyncio.run(main())
 ```
 
 Output :
+
 ```shell
 {'name': 'Foo', 'age': 45}
 {'name': 'Bar', 'age': 27}
@@ -313,7 +318,7 @@ asyncio.run(main())
 
 ### Credits
 
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
+This package was created with Cookiecutter and the `audreyr/cookiecutter-pypackage` project template.
 
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+.. Cookiecutter: <https://github.com/audreyr/cookiecutter>
+.. `audreyr/cookiecutter-pypackage`: <https://github.com/audreyr/cookiecutter-pypackage>

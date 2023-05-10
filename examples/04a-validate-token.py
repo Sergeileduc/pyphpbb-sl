@@ -33,11 +33,9 @@ async def try_to_verify(expected):
     async with PhpBB(host) as phpbb:
         await phpbb.login(username, password)
         await phpbb.fetch_unread_messages()
-        # Read message from expected user
-        message_to_read = phpbb.find_expected_message_by_user(expected)  # noqa: E501
-        if message_to_read:
+        if message_to_read := phpbb.find_expected_message_by_user(expected):
             message = await phpbb.read_private_message(message_to_read)
-            if message['content'] == token:
+            if message.content == token:
                 print("Valid token ! GOOD")
                 return True
             else:
@@ -51,14 +49,14 @@ async def main():
     print(f"Please send the token :\n{token} to the user {username}.\n"
           f"You're expected to be {expect_message_from_user}.\n"
           "You have 5 minutes.")
-    timeout = time.time() + 5 * 60   # 50 minutes from now
+    timeout = time.time() + 5 * 60   # 5 minutes from now
     while True:
         await asyncio.sleep(30)  # will fetch PM every 30 seconds
         if time.time() > timeout:
             break
         valid = await try_to_verify(expect_message_from_user)
         if valid:
-            # do_stuff()
+            print("Your token is valid!")
             break
 
 

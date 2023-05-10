@@ -3,13 +3,17 @@
 """Module to interract with phpBB forum."""
 
 
+from dataclasses import dataclass
+
 import asyncio
+import contextlib
 import logging
 import re
 import sys
 from functools import partialmethod
 from urllib.parse import urljoin
 from urllib.error import HTTPError
+from typing import Tuple
 
 from .browser import Browser
 
@@ -29,6 +33,16 @@ COOKIE_U_PATTERN = r'phpbb\d?_.*_u'  # new cookie regex
 COOKIE_SID_PATTERN = r'phpbb\d?_.*_sid'  # new cookie regex
 PM_ID_PATTERN = r"f=(?P<F>-?\d+)&p=(?P<P>\d+)"
 USER_ID_PATTERN = r"&u=(?P<UID>\d+)"
+
+
+@dataclass
+class Message:
+    """Class to represent a message."""
+    subject: str
+    url: str
+    fromto: str
+    content: str
+    unread: bool = True
 
 
 class PhpBB:
@@ -84,18 +98,17 @@ class PhpBB:
 
     def _get_user_id(self):
         cookies = self.browser.list_cookies()
-        for cookie in cookies:
-            if re.search(COOKIE_U_PATTERN, cookie.key):
-                return int(cookie.value)
-        return None  # pragma: no cover
+        return next((int(cookie.value)
+                    for cookie in cookies
+                    if re.search(COOKIE_U_PATTERN, cookie.key)),
+                    None)
 
     def _get_sid(self):
         cookies = self.browser.list_cookies()
-        for cookie in cookies:
-            if re.search(COOKIE_SID_PATTERN, cookie.key):
-                sid = cookie.value
-                return sid
-        return None  # pragma: no cover
+        return next((cookie.value
+                     for cookie in cookies
+                     if re.search(COOKIE_SID_PATTERN, cookie.key)),
+                    None)
 
     async def login(self, username, password):
         """Log in phpBB forum."""
@@ -185,16 +198,16 @@ class PhpBB:
         try:
             pattern_uid = r"address_list\[u\]\[(?P<UID>\d+)\]"
             matches = re.search(pattern_uid, user["name"])
-            return matches.group("UID")
+            return matches["UID"]
         except (KeyError, TypeError):  # pragma: no cover
             logger.error("Cant't add receiver, probably not a valid pseudonyme")  # noqa: E501
             return None
 
-    async def send_private_message(self, receiver, subject, message):
+    async def send_private_message(self, receiver: str, subject: str, message: str) -> bool:  # noqa: E501
         """Send private message."""
         logger.info("Trying to send private message to %s", receiver)
         url = urljoin(self.host, UCP_URL)
-        urlrep1, payload1 = await self._make_add_receiver_payload(url, receiver)  # noqa: E501
+        urlrep1, payload1 = await self._make_add_receiver_payload(url, receiver)
         await asyncio.sleep(2)
 
         # Add receiver
@@ -218,16 +231,13 @@ class PhpBB:
         return True
 
     @staticmethod
-    def _parse_inbox_mess(soup_item):
+    def _parse_inbox_mess(soup_item) -> Message:
         raw = soup_item.find("a", class_="topictitle")
-        sender = soup_item.find("a", class_=["username", "username-coloured"]).text  # noqa: E501
-        return {'subject': raw.text,
-                'url': raw["href"],
-                'fromto': sender,
-                'unread': True,
-                'content': None}
+        sender = soup_item.find("a", class_=["username", "username-coloured"]).text
+        return Message(subject=raw.text, url=raw["href"], fromto=sender,
+                       unread=True, content=None)
 
-    async def fetch_box(self, class_, box=INBOX):
+    async def fetch_box(self, class_: str, box=INBOX):
         """Fetch private messages inbox and return short descriptions.
 
         Return list of dicts.
@@ -242,29 +252,29 @@ class PhpBB:
     fetch_read_messages = partialmethod(fetch_box, "pm_read")
     fetch_sent_messages = partialmethod(fetch_box, "pm_read", box=SENTBOX)
 
-    def find_expected_message_by_user(self, sender_name):
+    def find_expected_message_by_user(self, sender_name: str):
         """Find message in unread_messages by sender name. Return first found.
         """
-        for message in self.unread_messages:
-            if message['fromto'] == sender_name:
-                return message
-        return None  # pragma: no cover
+        return next((message
+                     for message in self.unread_messages
+                     if message.fromto == sender_name),
+                    None)
 
-    async def read_private_message(self, message_dict):
+    async def read_private_message(self, message: Message) -> Message:
         """Read private message."""
-        url = urljoin(self.host, message_dict['url'])
+        url = urljoin(self.host, message.url)
         soup = await self.browser.get_html(url)
         content = soup.find("div", class_="content")
-        message_dict['unread'] = False
-        message_dict['content'] = content.text
-        return message_dict
+        message.unread = False
+        message.content = content.text
+        return message
 
     @staticmethod
-    def _extract_mp_number_id(message):
+    def _extract_mp_number_id(message: Message) -> Tuple[int, int]:
         """Extract f value and p value} in './ucp.php?i=pm&mode=view&f=0&p=11850'."""  # noqa: E501
-        match = re.search(PM_ID_PATTERN, message['url'])
-        f = int(match.group("F"))
-        p = int(match.group("P"))
+        match = re.search(PM_ID_PATTERN, message.url)
+        f = int(match["F"])
+        p = int(match["P"])
         return f, p
 
     @staticmethod
@@ -278,22 +288,20 @@ class PhpBB:
             int: age, if found, or 0 if not found
         """
         age = 0
-        try:
+        with contextlib.suppress(Exception):
             text = tag.next_sibling
             if not text.startswith(','):
                 # regex simply extract digits in next_sibling text, eg. ' (45), ' -> 45
                 age = int(re.search(r"\d+", text)[0])
-        except Exception:
-            pass
         return age
 
-    async def delete_mp(self, message):
+    async def delete_mp(self, message: Message) -> bool:
         """Delete given private message."""
         url, payload = await self._make_delete_mp_payload(message)
         await self.browser.post(url,
                                 # headers=headers,
                                 data=payload)
-        logging.info("message deleted : %s", message['url'][-7:])
+        logging.info("message deleted : %s", message.url[-7:])
         return True
 
     async def get_birthdays(self):
@@ -303,34 +311,39 @@ class PhpBB:
         age is set to '0' if not found.
         """
         soup = await self.browser.get_html(self.host)
-        raw = soup.select_one("div.inner > ul.topiclist.forums > li.row > div.birthday-list > p > strong")  # noqa: E501
-        if raw:
+        if raw := soup.select_one("div.inner > ul.topiclist.forums > li.row > div.birthday-list > p > strong"):  # noqa: E501
             bdays = raw.select("a.username")
             return [{'name': b.text, 'age': PhpBB._parse_age(b)} for b in bdays]
         return []
 
-    async def get_member_rank(self, member_name):
+    async def get_member_rank(self, member_name: str) -> str:
         """Fetch the forum rank for given member_name."""
         url = urljoin(self.host, MEMBERS_URL)
         params = dict(VIEW_PROFILE_MODE, un=member_name)
         soup = await self.browser.get_html(url, params=params)
         return soup.find('dd').text
 
-    async def get_member_uid(self, member_name):
-        """Fetch the user id number for given member_name."""
+    async def get_member_uid(self, member_name: str) -> int:
+        """Fetch the user id number for given member_name.
+
+        Args:
+            member_name (str):
+
+        Returns:
+            int: mamber UID
+        """
         try:
             url = urljoin(self.host, MEMBERS_URL)
             params = dict(VIEW_PROFILE_MODE, un=member_name)
             soup = await self.browser.get_html(url, params=params)
             canonical_url = soup.find('link', rel='canonical')['href']
             match = re.search(USER_ID_PATTERN, canonical_url)
-            uid = int(match.group("UID"))
-            return uid
+            return int(match["UID"])
         except Exception as e:
             print(e)
             return 0
 
-    async def get_member_infos(self, member_name):
+    async def get_member_infos(self, member_name: str) -> Tuple[int, str]:
         """Fetch the user id number AND rank for given member_name
 
         Args:
@@ -347,7 +360,7 @@ class PhpBB:
             soup = await self.browser.get_html(url, params=params)
             canonical_url = soup.find('link', rel='canonical')['href']
             match = re.search(USER_ID_PATTERN, canonical_url)
-            uid = int(match.group("UID"))
+            uid = int(match["UID"])
             rank = soup.find('dd').text
         except Exception as e:
             logger.error(e)

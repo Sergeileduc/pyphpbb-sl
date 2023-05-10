@@ -29,8 +29,9 @@ async def main():
     async with PhpBB(host) as phpbb:
         await phpbb.login(username, password)
         await phpbb.fetch_unread_messages()
-        message_to_read = phpbb.find_expected_message_by_user(expect_message_from_user)  # noqa: E501
-        if message_to_read:
+        if message_to_read := phpbb.find_expected_message_by_user(
+            expect_message_from_user
+        ):
             message = await phpbb.read_private_message(message_to_read)
             print(message)
 
