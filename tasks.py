@@ -1,3 +1,4 @@
+import contextlib
 import os
 import shutil
 import subprocess
@@ -40,14 +41,12 @@ def get_platform():
 def get_index_path():
     """Get full path for ./htmlcov/index.html file."""
     platform = get_platform()
-    if platform == "wsl":
-        # TODO: this part with .strip().replace() is ugly...
-        process = subprocess.run(['wslpath', '-w', '.'], capture_output=True, text=True)
-        pathstr = process.stdout.strip().replace('\\', '/')
-        path = Path(pathstr) / 'htmlcov/index.html'
-    else:
-        path = Path('.').resolve() / 'htmlcov' / 'index.html'
-    return path
+    if platform != "wsl":
+        return Path('.').resolve() / 'htmlcov' / 'index.html'
+    # TODO: this part with .strip().replace() is ugly...
+    process = subprocess.run(['wslpath', '-w', '.'], capture_output=True, text=True)
+    pathstr = process.stdout.strip().replace('\\', '/')
+    return Path(pathstr) / 'htmlcov/index.html'
 
 
 # TASKS------------------------------------------------------------------------
@@ -71,22 +70,33 @@ def cleantest(c):
         os.remove(art)
 
     # Delete caches folders
-    cache1 = (i for i in p.glob('**/__pycache__'))
-    cache2 = (i for i in p.glob('**/.pytest_cache'))
-    cache3 = (i for i in p.glob('**/.mypy_cache'))
+    cache1 = p.glob('**/__pycache__')
+    cache2 = p.glob('**/.pytest_cache')
+    cache3 = p.glob('**/.mypy_cache')
     caches = chain(cache1, cache2, cache3)
     for cache in caches:
         shutil.rmtree(cache)
 
     # Delete coverage artifacts
-    try:
+    with contextlib.suppress(FileNotFoundError):
         os.remove('.coverage')
         shutil.rmtree('htmlcov')
-    except FileNotFoundError:
-        pass
 
 
-@task(cleantest)
+@task
+def cleanbuild(c):
+    """Clean dist/, build/ and egg-info/."""
+    exclude = ('venv', '.venv')
+    p = Path('.')
+    gen1 = (i for i in p.glob('**/dist') if not str(i.parent).startswith(exclude))
+    gen2 = (i for i in p.glob('**/build') if not str(i.parent).startswith(exclude))
+    gen3 = (i for i in p.glob('**/*.egg-info') if not str(i.parent).startswith(exclude))
+    builds = chain(gen1, gen2, gen3)
+    for b in builds:
+        shutil.rmtree(b)
+
+
+@task(cleantest, cleanbuild)
 def clean(c):
     """Equivalent to both cleanbuild and cleantest..."""
     pass
@@ -109,3 +119,9 @@ def coverage(c):
     # c.run('coverage html')
     c.run('pytest --cov . --cov-report html')
     webbrowser.open(path.as_uri())
+
+
+@task(cleanbuild)
+def build(c):
+    """Build package using python -m build."""
+    c.run('python -m build')
