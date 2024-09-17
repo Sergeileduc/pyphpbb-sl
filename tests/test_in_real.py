@@ -1,9 +1,10 @@
-import aiohttp
+"Tests that really send and receive on the forum."
 import asyncio
 import logging
 import os
 from secrets import token_hex
 
+import aiohttp
 import pytest
 
 from dotenv import load_dotenv
@@ -67,16 +68,11 @@ async def test_token():
 
 @pytest.mark.asyncio
 async def test_misc():
-
-    session = aiohttp.ClientSession()
-
     """Send and receive"""
-    async with PhpBB(host, session=session) as phpbb:
+    async with PhpBB(host) as phpbb:
         await phpbb.login(sender_name, sender_password)
         messages = await phpbb.fetch_read_messages()
         _, _ = await phpbb._make_delete_mp_payload(messages[0])
-
-    await session.close()
 
 
 @pytest.mark.asyncio

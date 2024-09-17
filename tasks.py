@@ -1,14 +1,3 @@
-import contextlib
-import os
-import shutil
-import subprocess
-import webbrowser
-from itertools import chain
-from pathlib import Path
-from platform import uname
-
-from invoke import task
-
 """'Makefile' equivalent for invoke tool (invoke or inv).
 # Installation
 `pip install invoke`
@@ -23,6 +12,17 @@ or
 `source <(inv --print-completion-script zsh)`
 (or add it to ~/.zshrc or ~/.bashrc)
 """
+
+import contextlib
+import os
+import shutil
+import subprocess
+import webbrowser
+from itertools import chain
+from pathlib import Path
+from platform import uname
+
+from invoke import task
 
 
 # UTILS -----------------------------------------------------------------------
