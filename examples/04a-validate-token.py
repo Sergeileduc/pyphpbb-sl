@@ -46,10 +46,12 @@ async def try_to_verify(expected):
 
 # Context Manager code
 async def main():
-    print(f"Please send the token :\n{token} to the user {username}.\n"
-          f"You're expected to be {expect_message_from_user}.\n"
-          "You have 5 minutes.")
-    timeout = time.time() + 5 * 60   # 5 minutes from now
+    print(
+        f"Please send the token :\n{token} to the user {username}.\n"
+        f"You're expected to be {expect_message_from_user}.\n"
+        "You have 5 minutes."
+    )
+    timeout = time.time() + 5 * 60  # 5 minutes from now
     while True:
         await asyncio.sleep(30)  # will fetch PM every 30 seconds
         if time.time() > timeout:

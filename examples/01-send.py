@@ -36,9 +36,8 @@ async def main():
     print(f"host : {host}")
     async with PhpBB(host) as phpbb:
         await phpbb.login(username, password)
-        await phpbb.send_private_message(receiver=receiver,
-                                         subject=subject,
-                                         message=message)
+        await phpbb.send_private_message(receiver=receiver, subject=subject, message=message)
+
 
 asyncio.run(main())
 

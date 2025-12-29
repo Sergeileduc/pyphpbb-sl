@@ -33,9 +33,12 @@ async def main():
     async with PhpBB(host) as phpbb:
         await phpbb.login(username, password)
         sent_message_list = await phpbb.fetch_sent_messages()
-        filtered_sent_message_list = [m for m in sent_message_list if m.fromto == receiver]  # noqa: E501
+        filtered_sent_message_list = [
+            m for m in sent_message_list if m.fromto == receiver
+        ]  # noqa: E501
         print(*filtered_sent_message_list, sep='\n')
         for m in filtered_sent_message_list:
             await phpbb.delete_mp(m)
+
 
 asyncio.run(main())

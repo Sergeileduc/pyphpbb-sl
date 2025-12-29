@@ -29,9 +29,7 @@ async def main():
     async with PhpBB(host) as phpbb:
         await phpbb.login(username, password)
         await phpbb.fetch_unread_messages()
-        if message_to_read := phpbb.find_expected_message_by_user(
-            expect_message_from_user
-        ):
+        if message_to_read := phpbb.find_expected_message_by_user(expect_message_from_user):
             message = await phpbb.read_private_message(message_to_read)
             print(message)
 

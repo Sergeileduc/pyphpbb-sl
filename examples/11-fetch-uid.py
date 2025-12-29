@@ -35,4 +35,5 @@ async def main():
         uid = await phpbb.get_member_uid(querry_user)
         print(uid)
 
+
 asyncio.run(main())

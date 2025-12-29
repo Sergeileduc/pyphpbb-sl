@@ -34,9 +34,12 @@ async def main():
         print("Here are your unread messages :")
         print(*unread_mess_list, sep='\n')
 
-        print("\nHere are the contents of messages (messages have been marked as read) :")  # noqa: E501
+        print(
+            "\nHere are the contents of messages (messages have been marked as read) :"
+        )  # noqa: E501
         for unread_mess in unread_mess_list:
             message = await phpbb.read_private_message(unread_mess)
             print(message)
+
 
 asyncio.run(main())

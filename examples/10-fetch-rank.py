@@ -35,4 +35,5 @@ async def main():
         rank = await phpbb.get_member_rank(querry_user)
         print(rank)
 
+
 asyncio.run(main())

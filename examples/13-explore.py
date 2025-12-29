@@ -2,14 +2,14 @@
 # -*-coding:utf-8 -*-
 """Docstring."""
 
-import aiohttp
 import asyncio
 import logging
 import os
-from string import ascii_uppercase
 import re
+from string import ascii_uppercase
 from urllib.parse import urljoin
 
+import aiohttp
 from dotenv import load_dotenv
 
 from pyphpbb_sl import PhpBB
@@ -107,20 +107,26 @@ async def main():
         print_res_letters(sub_forums)
         if not active_topics_flag:
             print(f"*****{nb_topics} Topics**************")
-            print_res_numbers(topics[topics_page * 10:(topics_page + 1) * 10], 1)  # noqa: E226, E501
+            print_res_numbers(
+                topics[topics_page * 10 : (topics_page + 1) * 10], 1  # noqa: E203,E226
+            )
 
         if nb_topics > 10:
-            choice = input("Entrez un choix :\n"
-                           "- une lettre/un nombre pour naviguer\n"
-                           "- 'ù' pour remonter dans le dossier précédent\n"
-                           "- '!' pour la prochaine page de topics (10 suivants)\n"
-                           "- ':' pour la page précédente de topics (10 d'avant)\n"
-                           "- 'exit' pour sortir.\n")
+            choice = input(
+                "Entrez un choix :\n"
+                "- une lettre/un nombre pour naviguer\n"
+                "- 'ù' pour remonter dans le dossier précédent\n"
+                "- '!' pour la prochaine page de topics (10 suivants)\n"
+                "- ':' pour la page précédente de topics (10 d'avant)\n"
+                "- 'exit' pour sortir.\n"
+            )
         else:
-            choice = input("Entrez un choix :\n"
-                           "- un nombre pour naviguer dans un dossier\n"
-                           "- 'u' pour remonter dans le dossier précédent\n"
-                           "- 'exit' pour sortir.\n")
+            choice = input(
+                "Entrez un choix :\n"
+                "- un nombre pour naviguer dans un dossier\n"
+                "- 'u' pour remonter dans le dossier précédent\n"
+                "- 'exit' pour sortir.\n"
+            )
 
         if choice == "exit":
             break
@@ -133,13 +139,17 @@ async def main():
                 topics_page += 1
             if choice == ':' and topics_page > 0:
                 topics_page -= 1
-            print_res_numbers(topics[topics_page * 10:(topics_page + 1) * 10], 1)  # noqa: E226, E501
-            choice = input("Entrez un choix :\n"
-                           "- une lettre/un nombre pour naviguer\n"
-                           "- 'ù' pour remonter dans le dossier précédent\n"
-                           "- '!' pour la prochaine page de topics (10 suivants)\n"
-                           "- ':' pour la page précédente de topics (10 d'avant)\n"
-                           "- 'exit' pour sortir.\n")
+            print_res_numbers(
+                topics[topics_page * 10 : (topics_page + 1) * 10], 1  # noqa: E203,E226
+            )
+            choice = input(
+                "Entrez un choix :\n"
+                "- une lettre/un nombre pour naviguer\n"
+                "- 'ù' pour remonter dans le dossier précédent\n"
+                "- '!' pour la prochaine page de topics (10 suivants)\n"
+                "- ':' pour la page précédente de topics (10 d'avant)\n"
+                "- 'exit' pour sortir.\n"
+            )
 
         if choice.isdigit():
             choice = int(choice)
@@ -154,5 +164,6 @@ async def main():
 
     await phpbb.logout()
     await phpbb.close()
+
 
 asyncio.run(main())

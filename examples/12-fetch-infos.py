@@ -36,4 +36,5 @@ async def main():
         print(uid)
         print(rank)
 
+
 asyncio.run(main())
