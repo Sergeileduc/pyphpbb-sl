@@ -16,6 +16,9 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "License :: OSI Approved :: MIT License",
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
@@ -45,3 +48,67 @@ packages = ["pyphpbb_sl"]
 [tool.setuptools.dynamic]
 readme = {file = ["README.md", "HISTORY.md"], content-type = "text/markdown"}
 version = {attr = "pyphpbb_sl.__version__"}
+
+
+##### 🛠 DEV TOOLS #####
+[tool.black]
+line-length = 100
+target-version = ["py311", "py312", "py313"]
+skip-string-normalization = true
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.venv.*        # <-- couvre .venv, .venv11, .venv12, etc.
+  | build
+  | dist
+  | migrations
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+known_first_party = ["python_tools_sl", "python_web_tools_sl"]
+combine_as_imports = true
+force_single_line = false
+skip_glob = [
+    ".venv*/**",
+    "venv*/**",
+    "migrations/**"
+]
+
+[tool.mypy]
+python_version = "3.11"
+warn_unused_configs = true
+warn_unused_ignores = true
+warn_return_any = true
+warn_redundant_casts = true
+warn_unreachable = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+strict_optional = true
+ignore_missing_imports = true
+plugins = []
+files = ["python_tools_sl"]
+exclude = '''
+(
+    ^\.?venv.*$        # .venv, venv, venv11, .venv11, etc.
+  | ^env.*$            # env, env3.12, etc.
+  | ^tests?$           # test, tests
+  | ^tests/.*$         # contenu du dossier tests
+)
+'''
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+
+[tool.coverage.run]
+branch = true
+source = ["python_tools_sl"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true

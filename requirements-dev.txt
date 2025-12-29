@@ -4,8 +4,12 @@
 bump2version
 wheel
 watchdog
-flake8
 coverage
 Sphinx
-flake8
 invoke
+pre-commit
+mypy
+pytest
+flake8
+black
+isort

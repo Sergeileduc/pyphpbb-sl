@@ -24,8 +24,8 @@ from platform import uname
 
 from invoke import task
 
-
 # UTILS -----------------------------------------------------------------------
+
 
 def get_platform():
     """Check the platform (Windos, Linux, or WSL)."""
@@ -50,6 +50,7 @@ def get_index_path():
 
 
 # TASKS------------------------------------------------------------------------
+
 
 @task
 def lint(c):
