@@ -91,7 +91,7 @@ check_untyped_defs = true
 strict_optional = true
 ignore_missing_imports = true
 plugins = []
-files = ["python_tools_sl"]
+files = ["pyphpbb_sl", "tests", "examples"]
 exclude = '''
 (
     ^\.?venv.*$        # .venv, venv, venv11, .venv11, etc.
