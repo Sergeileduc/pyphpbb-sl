@@ -1,13 +1,13 @@
 "Tests that really send and receive on the forum."
+
 import asyncio
 import logging
 import os
 from secrets import token_hex
 
-import aiohttp
 import pytest
-
 from dotenv import load_dotenv
+
 from pyphpbb_sl import PhpBB
 
 logging.basicConfig(level=logging.INFO)
@@ -31,9 +31,9 @@ async def send():
     """Send message with token to receiver."""
     async with PhpBB(host) as phpbb:
         await phpbb.login(sender_name, sender_password)
-        await phpbb.send_private_message(receiver=receiver_name,
-                                         subject="validate my token",
-                                         message=token)
+        await phpbb.send_private_message(
+            receiver=receiver_name, subject="validate my token", message=token
+        )
 
 
 async def receive():
@@ -52,7 +52,9 @@ async def delete():
     async with PhpBB(host) as phpbb:
         await phpbb.login(receiver_name, receiver_password)
         read_mess_list = await phpbb.fetch_read_messages()
-        filterd_mess_by_sender = [m for m in read_mess_list if m.fromto == sender_name]  # noqa: E501
+        filterd_mess_by_sender = [
+            m for m in read_mess_list if m.fromto == sender_name
+        ]  # noqa: E501
         await phpbb.delete_mp(filterd_mess_by_sender[0])
 
 
