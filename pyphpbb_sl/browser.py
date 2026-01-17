@@ -11,6 +11,10 @@ from selectolax.parser import HTMLParser
 
 Cookie = namedtuple("Cookie", ["key", "value"])
 
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0 Safari/537.36"  # noqa: E501
+}
+
 
 class BrowserError(Exception):
     pass
@@ -22,7 +26,7 @@ class Browser:
     def __init__(self, base_url: str, user_agent: str | None = None) -> None:
         self.base_url = base_url.rstrip("/")
         self.client = httpx.AsyncClient(
-            headers={"User-Agent": user_agent or "Mozilla/5.0 (ForumBot/1.0)"},
+            headers=headers,
             timeout=10.0,
             follow_redirects=True,
         )
