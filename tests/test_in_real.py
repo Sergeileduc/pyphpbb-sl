@@ -116,8 +116,19 @@ async def test_get_member_uid():
 
 @pytest.mark.asyncio
 async def test_fetch_forums():
-    """Fetche forums"""
+    """Fetch forums"""
     async with PhpBB(host) as phpbb:
         await phpbb.login(sender_name, sender_password)
         forums = await phpbb.fetch_forums()
-        assert "Marvel" in [f.name for f in forums]
+        names = [f.name for f in forums]
+        assert "Marvel" in names
+
+
+@pytest.mark.asyncio
+async def test_fetch_forums2():
+    """Fetch forums"""
+    async with PhpBB(host) as phpbb:
+        await phpbb.login(sender_name, sender_password)
+        forums = await phpbb.fetch_forums("viewforum.php?f=26")
+        names = [f.name for f in forums]
+        assert "DC Rebirth" in names

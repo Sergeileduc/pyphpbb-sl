@@ -430,6 +430,6 @@ class PhpBB:
 
         return uid, rank
 
-    async def fetch_forums(self) -> list[SubForum]:
-        html = await self.browser.get_html("/index.php")
+    async def fetch_forums(self, url: str = "/index.php") -> list[SubForum]:
+        html = await self.browser.get_html(url)
         return parse_sub_forums(html)
