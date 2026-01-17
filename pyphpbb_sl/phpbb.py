@@ -9,7 +9,8 @@ from functools import partialmethod
 from urllib.error import HTTPError
 from urllib.parse import urljoin
 
-from pyphpbb_sl.models import Message
+from pyphpbb_sl.models import Message, SubForum
+from pyphpbb_sl.parsers import parse_sub_forums
 
 from .browser import Browser
 
@@ -43,10 +44,10 @@ class PhpBB:
         Args:
             host (str): url of phpbb forum
         """  # noqa: E501
-        self.host = host
+        self.host = host.rstrip("/")  # optionnel mais propre
         self.unread_messages = []  # Private Messages Inbox unread messages
         try:
-            self.browser = Browser()
+            self.browser = Browser(base_url=self.host)
         except HTTPError as e:  # pragma: no cover
             logger.error(e)
             sys.exit(1)
@@ -428,3 +429,7 @@ class PhpBB:
             logger.error(e)
 
         return uid, rank
+
+    async def fetch_forums(self) -> list[SubForum]:
+        html = await self.browser.get_html("/index.php")
+        return parse_sub_forums(html)

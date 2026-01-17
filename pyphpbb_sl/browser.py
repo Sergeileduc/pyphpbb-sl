@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections import namedtuple
 from typing import Any
+from urllib.parse import urljoin
 
 import httpx
 from selectolax.parser import HTMLParser
@@ -18,7 +19,8 @@ class BrowserError(Exception):
 class Browser:
     """Async HTTP browser using httpx + selectolax."""
 
-    def __init__(self, user_agent: str | None = None) -> None:
+    def __init__(self, base_url: str, user_agent: str | None = None) -> None:
+        self.base_url = base_url.rstrip("/")
         self.client = httpx.AsyncClient(
             headers={"User-Agent": user_agent or "Mozilla/5.0 (ForumBot/1.0)"},
             timeout=10.0,
@@ -30,7 +32,8 @@ class Browser:
     # -----------------------------
     async def get_html(self, url: str, **kwargs) -> HTMLParser:
         try:
-            r = await self.client.get(url, **kwargs)
+            full_url = urljoin(self.base_url + "/", url)
+            r = await self.client.get(full_url, **kwargs)
             r.raise_for_status()
             return HTMLParser(r.text)
         except httpx.HTTPError as e:

@@ -112,3 +112,12 @@ async def test_get_member_uid():
         await phpbb.login(sender_name, sender_password)
         member_id = await phpbb.get_member_uid(receiver_name)
         assert member_id == 43533
+
+
+@pytest.mark.asyncio
+async def test_fetch_forums():
+    """Fetche forums"""
+    async with PhpBB(host) as phpbb:
+        await phpbb.login(sender_name, sender_password)
+        forums = await phpbb.fetch_forums()
+        assert "Marvel" in [f.name for f in forums]
