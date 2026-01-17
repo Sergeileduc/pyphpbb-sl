@@ -28,7 +28,7 @@ SENTBOX = {"i": "pm", "folder": "sentbox"}
 SUBMIT = "Envoyer"
 COOKIE_U_PATTERN = r"phpbb\d?_.*_u"  # new cookie regex
 COOKIE_SID_PATTERN = r"phpbb\d?_.*_sid"  # new cookie regex
-PM_ID_PATTERN = r"f=(?P<F>-?\d+)&p=(?P<P>\d+)"
+PM_ID_PATTERN = re.compile(r"f=(?P<F>-?\d+)&p=(?P<P>\d+)")
 USER_ID_PATTERN = re.compile(r"&u=(?P<UID>\d+)")
 
 
@@ -252,7 +252,7 @@ class PhpBB:
         sender = sender_node.text() if sender_node else ""
 
         # Extract message ID from URL
-        match = re.search(PM_ID_PATTERN, url)
+        match = PM_ID_PATTERN.search(url)
         msg_id = int(match.group("P")) if match else -1
 
         return Message(
@@ -317,7 +317,7 @@ class PhpBB:
     @staticmethod
     def _extract_mp_number_id(message: Message) -> Tuple[int, int]:
         """Extract f value and p value} in './ucp.php?i=pm&mode=view&f=0&p=11850'."""  # noqa: E501
-        match = re.search(PM_ID_PATTERN, message.url)
+        match = PM_ID_PATTERN.search(message.url)
         if not match:
             raise ValueError
         f = int(match["F"])
