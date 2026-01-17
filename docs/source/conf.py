@@ -20,8 +20,10 @@
 # autopep8: off
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../..'))
+
+sys.path.insert(0, os.path.abspath("../.."))
 import pyphpbb_sl
+
 # autopep8: on
 
 # -- General configuration ---------------------------------------------
@@ -32,32 +34,33 @@ import pyphpbb_sl
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc',
-              'sphinx.ext.doctest',
-              'sphinx.ext.intersphinx',
-              'sphinx.ext.coverage',
-              'sphinx.ext.viewcode',
-              'sphinx.ext.githubpages',
-              'sphinx.ext.napoleon',
-              'myst_parser'
-              ]
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.doctest",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.coverage",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.githubpages",
+    "sphinx.ext.napoleon",
+    "myst_parser",
+]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
 source_suffix = {
-    '.rst': 'restructuredtext',
-    '.md': 'markdown',
+    ".rst": "restructuredtext",
+    ".md": "markdown",
 }
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # General information about the project.
-project = 'pyphpbb-sl'
+project = "pyphpbb-sl"
 copyright = "2020, Sergeileduc"
 author = "Sergeileduc"
 
@@ -73,11 +76,11 @@ release = pyphpbb_sl.__version__
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # The name of the Pygments (syntax highlighting) style to use.
 # pygments_style = 'sphinx'
-pygments_style = 'paraiso-dark'
+pygments_style = "paraiso-dark"
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
@@ -88,26 +91,26 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = "alabaster"
 
 # Theme options are theme-specific and customize the look and feel of a
 # theme further.  For a list of options available for each theme, see the
 # documentation.
 #
 html_theme_options = {
-    'description': 'python phpbb',
-    'github_button': True,
-    'github_user': 'Sergeileduc',
-    'github_repo': 'pyphpbb-sl',
-    'github_banner': False,
-    'github_type': 'mark',
-    'github_count': False,
-    'codecov_button': False,
-    'travis_button': False,
-    'font_family': "'Roboto', Georgia, sans",
-    'head_font_family': "'Roboto', Georgia, serif",
-    'code_font_family': "'Roboto Mono', 'Consolas', monospace",
-    'pre_bg': '#433e56'
+    "description": "python phpbb",
+    "github_button": True,
+    "github_user": "Sergeileduc",
+    "github_repo": "pyphpbb-sl",
+    "github_banner": False,
+    "github_type": "mark",
+    "github_count": False,
+    "codecov_button": False,
+    "travis_button": False,
+    "font_family": "'Roboto', Georgia, sans",
+    "head_font_family": "'Roboto', Georgia, serif",
+    "code_font_family": "'Roboto Mono', 'Consolas', monospace",
+    "pre_bg": "#433e56",
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -119,7 +122,7 @@ html_theme_options = {
 # -- Options for HTMLHelp output ---------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'pyphpbb_sldoc'
+htmlhelp_basename = "pyphpbb_sldoc"
 
 
 # -- Options for LaTeX output ------------------------------------------
@@ -128,15 +131,12 @@ latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
-
     # The font size ('10pt', '11pt' or '12pt').
     #
     # 'pointsize': '10pt',
-
     # Additional stuff for the LaTeX preamble.
     #
     # 'preamble': '',
-
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
@@ -146,9 +146,7 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass
 # [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'pyphpbb_sl.tex',
-     'pyphpbb-sl Documentation',
-     'Sergeileduc', 'manual'),
+    (master_doc, "pyphpbb_sl.tex", "pyphpbb-sl Documentation", "Sergeileduc", "manual"),
 ]
 
 
@@ -156,11 +154,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, 'pyphpbb_sl',
-     'pyphpbb-sl Documentation',
-     [author], 1)
-]
+man_pages = [(master_doc, "pyphpbb_sl", "pyphpbb-sl Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output ----------------------------------------
@@ -169,10 +163,13 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'pyphpbb_sl',
-     'pyphpbb-sl Documentation',
-     author,
-     'pyphpbb_sl',
-     'One line description of project.',
-     'Miscellaneous'),
+    (
+        master_doc,
+        "pyphpbb_sl",
+        "pyphpbb-sl Documentation",
+        author,
+        "pyphpbb_sl",
+        "One line description of project.",
+        "Miscellaneous",
+    ),
 ]

@@ -39,12 +39,13 @@ async def send():
 async def receive():
     async with PhpBB(host) as phpbb:
         await phpbb.login(receiver_name, receiver_password)
+        print("Login ok")
         await phpbb.fetch_unread_messages()
-        if message_to_read := phpbb.find_expected_message_by_user(sender_name):
+        if message_to_read := phpbb.find_expected_message_by_user(sender_name):  # type: ignore
             message = await phpbb.read_private_message(message_to_read)
             print(message)
 
-        assert message.content == token
+        assert message.content == token  # type: ignore
 
 
 async def delete():
@@ -52,9 +53,7 @@ async def delete():
     async with PhpBB(host) as phpbb:
         await phpbb.login(receiver_name, receiver_password)
         read_mess_list = await phpbb.fetch_read_messages()
-        filterd_mess_by_sender = [
-            m for m in read_mess_list if m.fromto == sender_name
-        ]  # noqa: E501
+        filterd_mess_by_sender = [m for m in read_mess_list if m.fromto == sender_name]  # noqa: E501
         await phpbb.delete_mp(filterd_mess_by_sender[0])
 
 
@@ -83,7 +82,7 @@ async def test_fetch_birthdays():
     async with PhpBB(host) as phpbb:
         await phpbb.login(receiver_name, receiver_password)
         out = await phpbb.get_birthdays()
-    print(*out, sep='\n')
+    print(*out, sep="\n")
     assert out is not None
 
 

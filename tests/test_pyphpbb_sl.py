@@ -5,7 +5,7 @@
 from collections import namedtuple
 
 import pytest
-from bs4 import BeautifulSoup
+from selectolax.parser import HTMLParser
 
 from pyphpbb_sl import Message, PhpBB
 
@@ -13,7 +13,7 @@ from pyphpbb_sl import Message, PhpBB
 @pytest.fixture
 def cookies():
     """Mock session cookies."""
-    Cookie = namedtuple('Cookie', ['key', 'value'])
+    Cookie = namedtuple("Cookie", ["key", "value"])
     return [
         Cookie("phpbb_pth98_u", 43533),
         Cookie("phpbb_pth98_k", ""),
@@ -24,8 +24,17 @@ def cookies():
 @pytest.fixture
 def not_logged_cookies():
     """Mock session cookies."""
-    Cookie = namedtuple('Cookie', ['key', 'value'])
+    Cookie = namedtuple("Cookie", ["key", "value"])
     return [Cookie("phpbb_pth98_u", 1), Cookie("phpbb_pth98_k", "")]
+
+
+@pytest.fixture
+async def phpbb_dummy():
+    phpbb = PhpBB("http://dummy.io")
+    try:
+        yield phpbb
+    finally:
+        await phpbb.close()
 
 
 @pytest.mark.asyncio
@@ -35,59 +44,43 @@ async def test_init_close():
 
 
 @pytest.mark.asyncio
-async def test_get_user_id(cookies):
-    """Test _get_user_id."""
+async def test_get_user_id(phpbb_dummy, cookies):
+    """ "Test get_user_id"""
+    # Mock cookies
+    phpbb_dummy.browser.list_cookies = lambda: cookies
 
-    def mock_cookies():
-        return cookies
-
-    async with PhpBB("http://dummy.io") as phpbb:
-        phpbb.browser.list_cookies = mock_cookies
-    assert phpbb._get_user_id() == 43533
+    # Test la méthode interne
+    assert phpbb_dummy._get_user_id() == 43533
 
 
 @pytest.mark.asyncio
-async def test_get_sid(cookies):
+async def test_get_sid(phpbb_dummy, cookies):
     """Test get user SID."""
 
-    def mock_cookies():
-        return cookies
-
-    async with PhpBB("http://dummy.io") as phpbb:
-        phpbb.browser.list_cookies = mock_cookies
-    assert phpbb._get_sid() == "ffac899f2ff73"
+    phpbb_dummy.browser.list_cookies = lambda: cookies
+    assert phpbb_dummy._get_sid() == "ffac899f2ff73"
 
 
 @pytest.mark.asyncio
-async def test_is_logged(cookies):
+async def test_is_logged(phpbb_dummy, cookies):
     """Test get user SID."""
-
-    def mock_cookies():
-        return cookies
-
-    async with PhpBB("http://dummy.io") as phpbb:
-        phpbb.browser.list_cookies = mock_cookies
-        assert phpbb.is_logged()
+    phpbb_dummy.browser.list_cookies = lambda: cookies
+    assert phpbb_dummy.is_logged()
 
 
 @pytest.mark.asyncio
-async def test_is_logged_fail(not_logged_cookies):
-    """Test get user SID."""
-
-    def mock_cookies():
-        return not_logged_cookies
-
-    async with PhpBB("http://dummy.io") as phpbb:
-        phpbb.browser.list_cookies = mock_cookies
-        assert not phpbb.is_logged()
+async def test_is_logged_fail(phpbb_dummy, not_logged_cookies):
+    """Test fail login."""
+    phpbb_dummy.browser.list_cookies = lambda: not_logged_cookies
+    assert not phpbb_dummy.is_logged()
 
 
 @pytest.fixture
 def message1() -> Message:
     return Message(
-        subject='Sent by python.',
-        url='./ucp.php?i=pm&mode=view&f=0&p=11850',
-        fromto='Foobar',
+        subject="Sent by python.",
+        url="./ucp.php?i=pm&mode=view&f=0&p=11850",
+        fromto="Foobar",
         unread=True,
         content=None,
     )
@@ -102,9 +95,9 @@ def test__extract_mp_number_id1(message1: Message):
 @pytest.fixture
 def message2() -> Message:
     return Message(
-        subject='Sent by python.',
-        url='./ucp.php?i=pm&mode=view&f=-1&p=11852',
-        fromto='Foobar',
+        subject="Sent by python.",
+        url="./ucp.php?i=pm&mode=view&f=-1&p=11852",
+        fromto="Foobar",
         unread=True,
         content=None,
     )
@@ -144,7 +137,8 @@ html = """
 </strong>
 """
 
-birthdays = BeautifulSoup(html, 'html.parser').select("a.username")
+root = HTMLParser(html)
+birthdays = root.css("a.username")
 
 testdata = [
     (birthdays[0], 0),

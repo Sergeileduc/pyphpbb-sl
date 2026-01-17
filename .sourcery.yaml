@@ -1,0 +1,11 @@
+ignore:
+  - .venv/ # ignore everything in the `.venv` directory
+  - venv/ # ignore everything in the `venv` directory
+rule_settings:
+  disable:
+    - raise-from-previous-error
+  rule_types:
+    - refactoring
+    - suggestion
+    - comment
+  python_version: "3.8"

@@ -1,99 +1,115 @@
-#!/usr/bin/python3
-# -*-coding:utf-8 -*-
-"""Module to handle HTTP requests (with requests lib)."""
+# pyphpbb_sl/browser.py
 
-from urllib.error import HTTPError
-import aiohttp
-from bs4 import BeautifulSoup
+from __future__ import annotations
+from collections import namedtuple
+from typing import Any
+
+import httpx
+from selectolax.parser import HTMLParser
+
+Cookie = namedtuple("Cookie", ["key", "value"])
+
+
+class BrowserError(Exception):
+    pass
 
 
 class Browser:
-    """Class to make HTTP requests."""
+    """Async HTTP browser using httpx + selectolax."""
 
-    def __init__(self, loop=None, session=None):
-        """Initiate browser with given aiohttpsession, or create one.
+    def __init__(self, user_agent: str | None = None) -> None:
+        self.client = httpx.AsyncClient(
+            headers={"User-Agent": user_agent or "Mozilla/5.0 (ForumBot/1.0)"},
+            timeout=10.0,
+            follow_redirects=True,
+        )
 
-        Args:
-            loop (Event Loop, optional): asyncio event Loop. Defaults to None.
-            session (aiohttp.session, optional): session. Defaults to None.
-        """
-        if session:
-            self.session = session
-            self._ownsession = False
-        else:
-            # self.session = aiohttp.ClientSession(loop=loop)
-            self.session = aiohttp.ClientSession(loop=loop,
-                                                 headers={"Connection": "close"})
-            self._ownsession = True
+    # -----------------------------
+    # GET HTML
+    # -----------------------------
+    async def get_html(self, url: str, **kwargs) -> HTMLParser:
+        try:
+            r = await self.client.get(url, **kwargs)
+            r.raise_for_status()
+            return HTMLParser(r.text)
+        except httpx.HTTPError as e:
+            raise BrowserError(f"GET failed for {url}: {e}") from e
+
+    # -----------------------------
+    # PARSE with SELECTOLAX
+    # -----------------------------
+
+    @staticmethod
+    def html2root(html: str) -> HTMLParser:
+        return HTMLParser(html)
+
+    # -----------------------------
+    # FORMS
+    # -----------------------------
+
+    async def get_form(self, url: str, form_id: str, **kwargs) -> dict[str, Any]:
+        root = await self.get_html(url, **kwargs)
+        form = root.css_first(f"form#{form_id}")
+
+        if form is None:
+            raise BrowserError(f"Form #{form_id} not found at {url}")
+
+        return self._extract_form(form)
+
+    @staticmethod
+    def _extract_form(form_node) -> dict[str, Any]:
+        values: dict[str, str] = {}
+
+        for inp in form_node.css("input"):
+            name = inp.attributes.get("name")
+            value = inp.attributes.get("value", "")
+            itype = inp.attributes.get("type")
+
+            if itype == "submit":
+                continue
+            if not name:
+                continue
+
+            values[name] = value
+
+        action = form_node.attributes.get("action")
+        if not action:
+            raise BrowserError("Form has no action attribute")
+
+        return {"action": action, "values": values}
+
+    # -----------------------------
+    # SELECT TAGS
+    # -----------------------------
+    async def select_tag(self, url: str, selector: str) -> dict[str | None, str | None]:
+        root = await self.get_html(url)
+        items = root.css(selector)
+        return {
+            i.attributes["name"]: i.attributes.get("value", "")
+            for i in items
+            if "name" in i.attributes
+        }
+
+    # -----------------------------
+    # POST
+    # -----------------------------
+    async def post(self, url: str, **kwargs) -> httpx.Response:
+        try:
+            r = await self.client.post(url, **kwargs)
+            r.raise_for_status()
+            return r
+        except httpx.HTTPError as e:
+            raise BrowserError(f"POST failed for {url}: {e}") from e
+
+    # -----------------------------
+    # COOKIES
+    # -----------------------------
+    def list_cookies(self) -> list[Cookie]:
+        return [Cookie(cookie.name, cookie.value) for cookie in self.client.cookies.jar]
+
+    # -----------------------------
+    # CLOSE
+    # -----------------------------
 
     async def close(self):
-        """Close aiohttp session if created by self."""
-        if self._ownsession:
-            await self.session.close()
-
-    @staticmethod
-    def html2soup(html):
-        """Convert text to BeautifulSoup."""
-        return BeautifulSoup(html, "html.parser")
-
-    async def get_html(self, url, params=None):
-        """Return HTML soup with Beautiful Soup.
-
-        Args:
-            url (str): url
-
-        Returns:
-            soup: HMTL soup
-
-        """
-        # headers = {}
-        # headers['User-Agent'] = self.user_agent
-        try:
-            r = await self.session.get(url, params=params)
-            return Browser.html2soup(await r.text())
-        except HTTPError as e:  # pragma: no cover
-            print("HTTP Error")
-            print(e)
-
-    async def get_form(self, url, form_id, params=None):
-        """Return form found in url as a dict."""
-        try:
-            soup = await self.get_html(url, params)
-            form = soup.find("form", id=form_id)
-            return self._get_form_values(form)
-        except HTTPError as e:  # pragma: no cover
-            print(e)
-            raise
-
-    @staticmethod
-    def _get_form_values(soup):
-        try:
-            inputs = soup.find_all("input")
-            values = {
-                inp["name"]: inp["value"]
-                for inp in inputs
-                if inp.get("type") != "submit"
-                and inp.get("name")
-                and inp.get("value")
-            }
-            return {"values": values, "action": soup["action"]}
-        except AttributeError as e:  # pragma: no cover
-            print(f"Attribute Error : {str(e)}")
-            return None
-        except KeyError as e:  # pragma: no cover
-            print(f"Key Error code : {str(e)}")
-            return None
-
-    async def select_tag(self, url, tag):
-        """Select tag in soup and return dict (name:value)."""
-        soup = await self.get_html(url)
-        items = soup.select(tag)
-        return {i['name']: i['value'] for i in items if i.has_attr('value')}
-
-    async def post(self, url, **kwargs):
-        """Send POST request using aiohttp."""
-        return await self.session.post(url, **kwargs)
-
-    def list_cookies(self):
-        """List session cookies."""
-        return self.session.cookie_jar
+        await self.client.aclose()

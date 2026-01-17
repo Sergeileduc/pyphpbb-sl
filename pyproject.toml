@@ -1,21 +1,23 @@
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+# Hatchling = build backend moderne, simple, rapide
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+requires-python = ">=3.12"
 
 [project]
 name = "pyphpbb_sl"
+version = "0.1.0"
 authors = [{name = "Sergeileduc", email = "sergei.leduc@gmail.com"},]
 maintainers = [{name = "Sergeileduc"}]
 description = "Interract with phpbb forum."
-dynamic = ["readme", "version"]
 license = {file = "LICENSE"}
-requires-python = ">=3.8"
+requires-python = ">=3.12"
 keywords = ["forum", "phpbb"]
 classifiers = [
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
@@ -26,15 +28,24 @@ classifiers = [
 ]
 
 dependencies = [
-    "aiohttp",
-    "bs4",
+    "httpx",
+    "selectolax",
 ]
 
-[project.optional-dependencies]
-test = ["pytest", "pytest-asyncio", "pytest-runner",
-        "asynctest", "python-dotenv", "pytest-cov"]
-doc = ["sphinx"]
-dev = ["flake8", "invoke", "build", "coverage", "bump2version"]
+# ---------------------------------------------------------------------------
+
+[dependency-groups]
+dev = [
+    "coverage>=7.13.1",
+    "invoke>=2.2.1",
+    "mypy>=1.19.1",
+    "pytest>=9.0.2",
+    "pytest-asyncio>=1.3.0",
+    "ruff>=0.14.10",
+    "python-dotenv",
+]
+
+# ---------------------------------------------------------------------------
 
 [project.urls]
 "Homepage" = "https://github.com/Sergeileduc/pyphpbb-sl"
@@ -53,7 +64,7 @@ version = {attr = "pyphpbb_sl.__version__"}
 ##### 🛠 DEV TOOLS #####
 [tool.black]
 line-length = 100
-target-version = ["py311", "py312", "py313"]
+target-version = ["py312", "py313", "py314"]
 skip-string-normalization = true
 include = '\.pyi?$'
 exclude = '''
@@ -79,7 +90,7 @@ skip_glob = [
 ]
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.12"
 warn_unused_configs = true
 warn_unused_ignores = true
 warn_return_any = true
@@ -104,6 +115,14 @@ exclude = '''
 [[tool.mypy.overrides]]
 module = "tests.*"
 disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = [
+    "ignore:.*U.*:DeprecationWarning",
+]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
 
 [tool.coverage.run]
 branch = true

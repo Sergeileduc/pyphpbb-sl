@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 
 from pyphpbb_sl import PhpBB
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)
 
 # Parse a .env file and then load all the variables found as environment variables.  # noqa: E501
 load_dotenv()
@@ -25,7 +25,7 @@ logging.debug("host %s", host)
 logging.debug("username %s", username)
 logging.debug("password %s", password)
 
-querry_user = os.getenv("RECEIVER_NAME")
+querry_user: str = os.getenv("RECEIVER_NAME") or ""
 
 
 # Context Manager code
