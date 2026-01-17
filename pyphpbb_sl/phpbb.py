@@ -29,7 +29,7 @@ SUBMIT = "Envoyer"
 COOKIE_U_PATTERN = r"phpbb\d?_.*_u"  # new cookie regex
 COOKIE_SID_PATTERN = r"phpbb\d?_.*_sid"  # new cookie regex
 PM_ID_PATTERN = r"f=(?P<F>-?\d+)&p=(?P<P>\d+)"
-USER_ID_PATTERN = r"&u=(?P<UID>\d+)"
+USER_ID_PATTERN = re.compile(r"&u=(?P<UID>\d+)")
 
 
 class PhpBB:
@@ -402,11 +402,11 @@ class PhpBB:
             if not href:
                 return 0
 
-            match = re.search(USER_ID_PATTERN, href)
+            match = USER_ID_PATTERN.search(href)
             if not match:
                 return 0
 
-            return int(match["UID"])
+            return int(match.group("UID"))
 
         except Exception as e:
             print(e)
@@ -425,10 +425,10 @@ class PhpBB:
             # 1) canonical URL
             link = root.css_first("link[rel=canonical]")
             if link and "href" in link.attributes:
-                canonical_url = link.attributes["href"]
-                match = re.search(USER_ID_PATTERN, canonical_url)
+                canonical_url: str = link.attributes["href"] or ""
+                match = USER_ID_PATTERN.search(canonical_url)
                 if match:
-                    uid = int(match["UID"])
+                    uid = int(match.group("UID"))
 
             # 2) rank = premier <dd>
             dd = root.css_first("dd")
