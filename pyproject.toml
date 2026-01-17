@@ -131,3 +131,15 @@ source = ["python_tools_sl"]
 [tool.coverage.report]
 show_missing = true
 skip_covered = true
+
+##### 🛠 BUMP2VERSION #####
+
+[tool.bumpversion]
+current_version = "0.12.0"
+commit = true
+tag = true
+
+[[tool.bumpversion.files]]
+filename = "pyphpbb_sl/__init__.py"
+search = "__version__ = \"{current_version}\""
+replace = "__version__ = \"{new_version}\""
