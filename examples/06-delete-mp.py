@@ -34,9 +34,9 @@ async def main():
         await phpbb.login(username, password)
         read_mess_list = await phpbb.fetch_read_messages()
         print("Here are your read messages :")
-        filterd_mess_by_sender = [m for m in read_mess_list if m.fromto == sender]  # noqa: E501
-        print(*filterd_mess_by_sender, sep='\n')
-        for m in filterd_mess_by_sender:
+        filtered_mess_by_sender = [m for m in read_mess_list if m.sender == sender]
+        print(*filtered_mess_by_sender, sep="\n")
+        for m in filtered_mess_by_sender:
             await phpbb.delete_mp(m)
 
 

@@ -78,9 +78,11 @@ async def test_is_logged_fail(phpbb_dummy, not_logged_cookies):
 @pytest.fixture
 def message1() -> Message:
     return Message(
+        id=11850,
         subject="Sent by python.",
         url="./ucp.php?i=pm&mode=view&f=0&p=11850",
-        fromto="Foobar",
+        sender="Foobar",
+        receiver=None,
         unread=True,
         content=None,
     )
@@ -95,9 +97,11 @@ def test__extract_mp_number_id1(message1: Message):
 @pytest.fixture
 def message2() -> Message:
     return Message(
+        id=11852,
         subject="Sent by python.",
         url="./ucp.php?i=pm&mode=view&f=-1&p=11852",
-        fromto="Foobar",
+        sender="Foobar",
+        receiver=None,
         unread=True,
         content=None,
     )

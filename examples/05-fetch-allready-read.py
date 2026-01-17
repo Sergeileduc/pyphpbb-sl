@@ -20,7 +20,7 @@ host = os.getenv("HOST")
 
 username = os.getenv("RECEIVER_NAME")
 password = os.getenv("RECEIVER_PASSWORD")
-sender = os.getenv("SENDER_NAME")
+sender_name = os.getenv("SENDER_NAME")
 
 
 logging.debug("host %s", host)
@@ -34,8 +34,10 @@ async def main():
         await phpbb.login(username, password)
         unread_mess_list = await phpbb.fetch_read_messages()
         print("Here are your read messages :")
-        filterd_mess_by_sender = [m for m in unread_mess_list if m.fromto == sender]  # noqa: E501
-        print(*filterd_mess_by_sender, sep='\n')
+        filterd_mess_by_sender = [
+            m for m in unread_mess_list if m.sender == sender_name
+        ]
+        print(*filterd_mess_by_sender, sep="\n")
 
 
 asyncio.run(main())

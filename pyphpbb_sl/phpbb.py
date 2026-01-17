@@ -6,13 +6,13 @@ import asyncio
 import logging
 import re
 import sys
-from dataclasses import dataclass
 from functools import partialmethod
 from typing import Tuple
 from urllib.error import HTTPError
 from urllib.parse import urljoin
 
 from .browser import Browser
+from pyphpbb_sl.models import Message
 
 logger = logging.getLogger(__name__)
 
@@ -30,17 +30,6 @@ COOKIE_U_PATTERN = r"phpbb\d?_.*_u"  # new cookie regex
 COOKIE_SID_PATTERN = r"phpbb\d?_.*_sid"  # new cookie regex
 PM_ID_PATTERN = r"f=(?P<F>-?\d+)&p=(?P<P>\d+)"
 USER_ID_PATTERN = r"&u=(?P<UID>\d+)"
-
-
-@dataclass
-class Message:
-    """Class to represent a message."""
-
-    subject: str
-    url: str
-    fromto: str
-    content: str | None
-    unread: bool = True
 
 
 class PhpBB:
@@ -262,12 +251,18 @@ class PhpBB:
         url = raw.attributes.get("href") if raw else ""
         sender = sender_node.text() if sender_node else ""
 
+        # Extract message ID from URL
+        match = re.search(PM_ID_PATTERN, url)
+        msg_id = int(match.group("P")) if match else -1
+
         return Message(
+            id=msg_id,
             subject=subject,
             url=url,
-            fromto=sender,
-            unread=True,
+            sender=sender,
+            receiver=None,  # inbox → receiver = toi
             content=None,
+            unread=True,
         )
 
     async def fetch_box(self, class_: str, box=INBOX):
@@ -297,7 +292,7 @@ class PhpBB:
             (
                 message
                 for message in self.unread_messages
-                if message.fromto == sender_name
+                if message.sender == sender_name
             ),
             None,
         )
@@ -310,17 +305,21 @@ class PhpBB:
         content = content_node.text().strip() if content_node else ""
 
         return Message(
+            id=message.id,
             subject=message.subject,
             url=message.url,
-            fromto=message.fromto,
-            unread=False,
+            sender=message.sender,
+            receiver=message.receiver,
             content=content,
+            unread=False,
         )
 
     @staticmethod
     def _extract_mp_number_id(message: Message) -> Tuple[int, int]:
         """Extract f value and p value} in './ucp.php?i=pm&mode=view&f=0&p=11850'."""  # noqa: E501
         match = re.search(PM_ID_PATTERN, message.url)
+        if not match:
+            raise ValueError
         f = int(match["F"])
         p = int(match["P"])
         return f, p
