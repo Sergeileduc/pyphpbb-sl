@@ -1,6 +1,7 @@
 # pyphpbb_sl/browser.py
 
 from __future__ import annotations
+
 from collections import namedtuple
 from typing import Any
 

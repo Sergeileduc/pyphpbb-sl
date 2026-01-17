@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*-coding:utf-8 -*-
 """Docstring."""
 
 # import aiohttp
@@ -32,11 +31,9 @@ async def main():
         await phpbb.login(username, password)
         unread_mess_list = await phpbb.fetch_unread_messages()
         print("Here are your unread messages :")
-        print(*unread_mess_list, sep='\n')
+        print(*unread_mess_list, sep="\n")
 
-        print(
-            "\nHere are the contents of messages (messages have been marked as read) :"
-        )  # noqa: E501
+        print("\nHere are the contents of messages (messages have been marked as read) :")  # noqa: E501
         for unread_mess in unread_mess_list:
             message = await phpbb.read_private_message(unread_mess)
             print(message)

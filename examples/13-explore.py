@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*-coding:utf-8 -*-
 """Docstring."""
 
 import asyncio
@@ -32,10 +31,7 @@ logging.debug("password %s", password)
 
 def get_sub_forums(html):
     sub_forums = html.css("a.forumtitle")
-    return [
-        {"name": s.text().strip(), "url": s.attributes.get("href", "")}
-        for s in sub_forums
-    ]
+    return [{"name": s.text().strip(), "url": s.attributes.get("href", "")} for s in sub_forums]
 
 
 def get_nb_topics(html: HTMLParser):
@@ -44,17 +40,18 @@ def get_nb_topics(html: HTMLParser):
         node: Node | None = html.css_first("div.pagination")
         raw: str = node.text() if node else ""
 
-        n = re.search(r"(?P<nb_topics>\d+?) sujet(s)?", raw)["nb_topics"]
-        return int(n)
+        match = re.search(r"(?P<nb_topics>\d+?) sujet(s)?", raw)
+        if match:
+            return int(match.group("nb_topics"))
+        return 0
+
     except (AttributeError, TypeError):
         return 0
 
 
 def get_topics(html):
     topics = html.css("a.topictitle")
-    return [
-        {"name": t.text().strip(), "url": t.attributes.get("href", "")} for t in topics
-    ]
+    return [{"name": t.text().strip(), "url": t.attributes.get("href", "")} for t in topics]
 
 
 async def get_all_topics(phpbb, html, url):

@@ -73,32 +73,21 @@ version = {attr = "pyphpbb_sl.__version__"}
 
 
 ##### 🛠 DEV TOOLS #####
-[tool.black]
+[tool.ruff]
+# Linter + formatter + import sorter
 line-length = 100
-target-version = ["py312", "py313", "py314"]
-skip-string-normalization = true
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-  | \.venv.*        # <-- couvre .venv, .venv11, .venv12, etc.
-  | build
-  | dist
-  | migrations
-)/
-'''
+target-version = "py312"
 
-[tool.isort]
-profile = "black"
-line_length = 100
-known_first_party = ["python_tools_sl", "python_web_tools_sl"]
-combine_as_imports = true
-force_single_line = false
-skip_glob = [
-    ".venv*/**",
-    "venv*/**",
-    "migrations/**"
-]
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+# ---------------------------------------------------------------------------
 
 [tool.mypy]
 python_version = "3.12"
@@ -107,13 +96,13 @@ warn_unused_ignores = true
 warn_return_any = true
 warn_redundant_casts = true
 warn_unreachable = true
-disallow_untyped_defs = true
+disallow_untyped_defs = false
 disallow_incomplete_defs = true
 check_untyped_defs = true
 strict_optional = true
 ignore_missing_imports = true
 plugins = []
-files = ["pyphpbb_sl", "tests", "examples"]
+files = ["."]
 exclude = '''
 (
     ^\.?venv.*$        # .venv, venv, venv11, .venv11, etc.

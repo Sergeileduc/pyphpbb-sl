@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*-coding:utf-8 -*-
 """Docstring."""
 
 # import aiohttp
@@ -34,9 +33,7 @@ async def main():
         await phpbb.login(username, password)
         unread_mess_list = await phpbb.fetch_read_messages()
         print("Here are your read messages :")
-        filterd_mess_by_sender = [
-            m for m in unread_mess_list if m.sender == sender_name
-        ]
+        filterd_mess_by_sender = [m for m in unread_mess_list if m.sender == sender_name]
         print(*filterd_mess_by_sender, sep="\n")
 
 

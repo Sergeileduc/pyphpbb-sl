@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-# -*- coding: utf-8 -*-
 """Module to interract with phpBB forum."""
 
 import asyncio
@@ -7,12 +6,12 @@ import logging
 import re
 import sys
 from functools import partialmethod
-from typing import Tuple
 from urllib.error import HTTPError
 from urllib.parse import urljoin
 
-from .browser import Browser
 from pyphpbb_sl.models import Message
+
+from .browser import Browser
 
 logger = logging.getLogger(__name__)
 
@@ -207,9 +206,7 @@ class PhpBB:
 
         return int(match.group("UID"))
 
-    async def send_private_message(
-        self, receiver: str | None, subject: str, message: str
-    ) -> bool:  # noqa: E501
+    async def send_private_message(self, receiver: str | None, subject: str, message: str) -> bool:  # noqa: E501
         """Send private message."""
         logger.info("Trying to send private message to %s", receiver)
         url = urljoin(self.host, UCP_URL)
@@ -276,9 +273,7 @@ class PhpBB:
         # Sélectionne tous les <dl class="pm_unread"> ou autre class_
         raw_unread_list = root.css(f"dl.{class_}")
 
-        self.unread_messages = [
-            PhpBB._parse_inbox_mess(item) for item in raw_unread_list
-        ]
+        self.unread_messages = [PhpBB._parse_inbox_mess(item) for item in raw_unread_list]
 
         return self.unread_messages
 
@@ -289,11 +284,7 @@ class PhpBB:
     def find_expected_message_by_user(self, sender_name: str):
         """Find message in unread_messages by sender name. Return first found."""
         return next(
-            (
-                message
-                for message in self.unread_messages
-                if message.sender == sender_name
-            ),
+            (message for message in self.unread_messages if message.sender == sender_name),
             None,
         )
 
@@ -315,7 +306,7 @@ class PhpBB:
         )
 
     @staticmethod
-    def _extract_mp_number_id(message: Message) -> Tuple[int, int]:
+    def _extract_mp_number_id(message: Message) -> tuple[int, int]:
         """Extract f value and p value} in './ucp.php?i=pm&mode=view&f=0&p=11850'."""  # noqa: E501
         match = PM_ID_PATTERN.search(message.url)
         if not match:
@@ -357,9 +348,7 @@ class PhpBB:
         age is set to '0' if not found.
         """
         root = await self.browser.get_html(self.host)
-        raw = root.css_first(
-            "div.inner ul.topiclist.forums li.row div.birthday-list p strong"
-        )
+        raw = root.css_first("div.inner ul.topiclist.forums li.row div.birthday-list p strong")
         if not raw:
             return []
         bdays = raw.css("a.username")
@@ -412,7 +401,7 @@ class PhpBB:
             print(e)
             return 0
 
-    async def get_member_infos(self, member_name: str) -> Tuple[int, str]:
+    async def get_member_infos(self, member_name: str) -> tuple[int, str]:
         """Fetch the user id number AND rank for given member_name."""
         uid = 0
         rank = ""

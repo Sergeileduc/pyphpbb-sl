@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass
@@ -8,6 +7,6 @@ class Message:
     subject: str
     url: str
     sender: str
-    receiver: Optional[str]
-    content: Optional[str]
+    receiver: str | None
+    content: str | None
     unread: bool

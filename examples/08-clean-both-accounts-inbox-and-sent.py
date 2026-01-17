@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*-coding:utf-8 -*-
 """Docstring."""
 
 # import aiohttp
@@ -37,9 +36,7 @@ async def clean(user, password, other_user):
         # Unread messages
         logging.info("clean account A unread mess")
         unread_mess_list = await phpbb.fetch_unread_messages()
-        filtered_unread_mess_by_sender = [
-            m for m in unread_mess_list if m.sender == other_user
-        ]
+        filtered_unread_mess_by_sender = [m for m in unread_mess_list if m.sender == other_user]
         for m in filtered_unread_mess_by_sender:
             await phpbb.delete_mp(m)
 
@@ -53,9 +50,7 @@ async def clean(user, password, other_user):
         # Sent messages
         logging.info("clean account A sent mess")
         sent_message_list = await phpbb.fetch_sent_messages()
-        filtered_sent_message_list = [
-            m for m in sent_message_list if m.receiver == other_user
-        ]
+        filtered_sent_message_list = [m for m in sent_message_list if m.receiver == other_user]
         for m in filtered_sent_message_list:
             await phpbb.delete_mp(m)
 

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*-coding:utf-8 -*-
 """Docstring."""
 
 # import aiohttp
@@ -33,9 +32,7 @@ async def main():
     async with PhpBB(host) as phpbb:
         await phpbb.login(username, password)
         sent_message_list = await phpbb.fetch_sent_messages()
-        filtered_sent_message_list = [
-            m for m in sent_message_list if m.receiver == receiver
-        ]
+        filtered_sent_message_list = [m for m in sent_message_list if m.receiver == receiver]
 
         print(*filtered_sent_message_list, sep="\n")
         for m in filtered_sent_message_list:

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*-coding:utf-8 -*-
 """Docstring."""
 
 # import aiohttp
@@ -31,7 +30,7 @@ async def main():
     async with PhpBB(host) as phpbb:
         await phpbb.login(username, password)
         out = await phpbb.get_birthdays()
-        print(*out, sep='\n')
+        print(*out, sep="\n")
 
 
 asyncio.run(main())
